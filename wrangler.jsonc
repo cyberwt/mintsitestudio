@@ -4,11 +4,7 @@
   "account_id": "629ea57d26a608c11fc82b05ee423d79",
   "main": "src/worker.js",
   "compatibility_date": "2025-09-01",
-  // The Worker runs first so it can route paths on demo.mintsitestudio.com:
-  //   /          -> demo deal feed (public/demo/)
-  //   /studio    -> card tool, /api/draft -> card drafting
-  //   /creators  -> pitch page (public/index.html)
-  // The apex still points at the older Netlify page; it isn't routed here until the user decides.
+  // The Worker runs first so it can route by host and path (see src/worker.js header).
   "assets": {
     "directory": "public",
     "binding": "ASSETS",
@@ -17,6 +13,8 @@
   },
   "workers_dev": false,
   "routes": [
+    { "pattern": "mintsitestudio.com", "custom_domain": true },
+    { "pattern": "www.mintsitestudio.com", "custom_domain": true },
     { "pattern": "demo.mintsitestudio.com", "custom_domain": true }
   ]
 }

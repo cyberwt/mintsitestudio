@@ -1,7 +1,7 @@
-// Mint Site Studio demo Worker (demo.mintsitestudio.com):
-//   /          demo deal feed
-//   /studio    card tool (POSTs to /api/draft)
-//   /creators  pitch page for creators (public/creators.html, served as-is)
+// Mint Site Studio Worker.
+//   mintsitestudio.com       /  -> pitch page (public/creators.html); demo paths redirect to demo.
+//   www.mintsitestudio.com      -> 301 to the apex
+//   demo.mintsitestudio.com  /  -> demo deal feed, /studio card tool, /creators pitch, /api/draft
 
 const DEMO_PATHS = {
   "/": "/demo/",
@@ -12,6 +12,20 @@ const DEMO_PATHS = {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    if (url.hostname === "www.mintsitestudio.com") {
+      url.hostname = "mintsitestudio.com";
+      return Response.redirect(url.toString(), 301);
+    }
+
+    if (url.hostname === "mintsitestudio.com") {
+      if (url.pathname === "/" || url.pathname === "/creators") {
+        return env.ASSETS.fetch(new Request(new URL("/creators", url.origin), request));
+      }
+      if (url.pathname in DEMO_PATHS || url.pathname.startsWith("/demo")) {
+        return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
+      }
+    }
 
     if (url.pathname === "/api/draft") {
       if (request.method !== "POST") return json({ error: "POST only" }, 405);
