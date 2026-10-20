@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小薄荷好价 · 演示站</title>
+<meta name="description" content="创作者专属折扣站演示：每日好价、过期自动下架、一键复制到微信群。">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<style>
+  :root{--bg:#f6f8f7;--card:#fff;--ink:#16211d;--muted:#66736e;--line:#e3e9e6;--mint:#0f9d76;--mint-soft:#e3f5ee;--hot:#e5484d;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04)}
+  @media (prefers-color-scheme:dark){:root{--bg:#0f1412;--card:#18201d;--ink:#e8efec;--muted:#93a29c;--line:#26302c;--mint:#3fd1a4;--mint-soft:#173129;--hot:#ff6b6f;--shadow:none}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+  .demo-bar{background:#1d2b26;color:#cfe9df;font-size:12.5px;text-align:center;padding:7px 16px}
+  .demo-bar a{color:#7ff0c8}
+  header{max-width:760px;margin:0 auto;padding:22px 16px 6px;display:flex;gap:14px;align-items:center}
+  .avatar{width:54px;height:54px;border-radius:50%;background:var(--mint-soft);display:grid;place-items:center;font-size:28px;flex:none}
+  h1{font-size:21px;margin:0}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .wechat{max-width:760px;margin:12px auto 0;padding:0 16px}
+  .wechat div{background:var(--mint-soft);border-radius:12px;padding:12px 14px;display:flex;gap:12px;align-items:center;font-size:14px}
+  .qr{width:46px;height:46px;border-radius:6px;background:repeating-linear-gradient(45deg,var(--ink) 0 4px,transparent 4px 8px),var(--card);opacity:.75;flex:none}
+  nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-top:14px}
+  nav .in{max-width:760px;margin:0 auto;padding:8px 16px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+  nav button{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:6px 14px;border-radius:999px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+  nav button[aria-pressed=true]{background:var(--mint);border-color:var(--mint);color:#fff}
+  main{max-width:760px;margin:0 auto;padding:12px 16px 40px;display:grid;gap:10px}
+  .deal{background:var(--card);border-radius:14px;box-shadow:var(--shadow);border:1px solid var(--line);padding:14px;display:grid;grid-template-columns:58px 1fr;gap:12px;text-decoration:none;color:inherit}
+  .logo{width:58px;height:58px;border-radius:12px;display:grid;place-items:center;font-weight:700;font-size:18px;color:#fff}
+  .hook{font-weight:650;font-size:15.5px;line-height:1.35}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;margin-top:4px;font-size:13.5px;color:var(--muted)}
+  .price{color:var(--hot);font-weight:700;font-size:15px}
+  .was{text-decoration:line-through}
+  .chip{background:var(--mint-soft);color:var(--mint);border-radius:6px;padding:0 6px;font-size:12px}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px;gap:8px}
+  .age{font-size:12px;color:var(--muted)}
+  .copy{border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-size:12.5px;padding:3px 10px;border-radius:8px;cursor:pointer}
+  .copy:hover{color:var(--mint);border-color:var(--mint)}
+  .deal.expired{opacity:.5;filter:grayscale(1)}
+  .deal.expired .hook::before{content:"已过期 · ";color:var(--muted)}
+  footer{max-width:760px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:12.5px}
+  footer a{color:var(--mint)}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d2b26;color:#e8fff6;padding:8px 16px;border-radius:999px;font-size:14px;opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="demo-bar">演示站 · 商品与价格均为示例数据，并非实时折扣 · <a href="/creators">了解 Mint Site Studio</a> · <a href="/studio">试试发布工具 →</a></div>
+
+<header>
+  <div class="avatar">🌿</div>
+  <div>
+    <h1>小薄荷好价</h1>
+    <div class="sub">示例创作者 · 美妆 / 时尚 / 户外 / 生活好物 · 每天更新</div>
+  </div>
+</header>
+
+<div class="wechat"><div><span class="qr" aria-hidden="true"></span><span><b>查看更多折扣，扫码进微信群</b><br><span class="sub">（这里放你的群二维码、Telegram 或 Discord 链接）</span></span></div></div>
+
+<nav><div class="in" id="tabs"></div></nav>
+<main id="feed" aria-live="polite"></main>
+
+<footer>
+  <p>* Disclosure: 本站部分链接为联盟链接，通过链接购买我们可能获得佣金，你的价格不变。</p>
+  <p>Built with <a href="/creators">Mint Site Studio</a>：创作者专属折扣站。</p>
+</footer>
+<div class="toast" id="toast">已复制，可直接粘贴到微信群</div>
+
+<script>
+const CATS=[["all","全部"],["beauty","美妆"],["fashion","时尚"],["outdoor","户外"],["lifestyle","生活"],["luxury","奢品"]];
+const COLORS=["#0f9d76","#c2185b","#5b6ee1","#e07a2f","#2c7a7b","#8e5cd9","#b7791f","#d64545"];
+let deals=[],cur="all";
+try{cur=localStorage.getItem("tab")||"all"}catch(e){}
+const $=s=>document.querySelector(s);
+const fmt=n=>"$"+(Number.isInteger(n)?n:n.toFixed(2));
+const ago=h=>h<1?"刚刚":h<24?h+"h":Math.floor(h/24)+"d";
+const color=b=>COLORS[[...b].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const initials=b=>b.replace(/[^A-Za-z ]/g,"").split(" ").filter(Boolean).map(w=>w[0]).join("").slice(0,2).toUpperCase()||b.slice(0,1);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function renderTabs(){$("#tabs").innerHTML=CATS.map(([k,v])=>`<button data-k="${k}" aria-pressed="${k===cur}">${v}</button>`).join("")}
+function render(){
+  const list=deals.filter(d=>cur==="all"||d.cat===cur).sort((a,b)=>(a.expired-b.expired)||(a.age-b.age));
+  $("#feed").innerHTML=list.map((d,i)=>`
+    <a class="deal${d.expired?" expired":""}" href="${esc(d.link)}" target="_blank" rel="sponsored noopener">
+      <div class="logo" style="background:${color(d.brand)}">${esc(initials(d.brand))}</div>
+      <div>
+        <div class="hook">${esc(d.hook)}</div>
+        <div class="meta"><span>${esc(d.brand)} · ${esc(d.title)}</span></div>
+        <div class="meta"><span class="was">${fmt(d.was)}</span><span class="price">${fmt(d.now)}</span>${d.tag?`<span class="chip">${esc(d.tag)}</span>`:""}</div>
+        <div class="row"><span class="age">${ago(d.age)} 前</span><button class="copy" data-i="${deals.indexOf(d)}">复制到微信</button></div>
+      </div>
+    </a>`).join("")||`<p class="sub">这个分类暂时没有折扣。</p>`;
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("nav button");
+  if(t){cur=t.dataset.k;try{localStorage.setItem("tab",cur)}catch(_){};renderTabs();render();return}
+  const c=e.target.closest(".copy");
+  if(c){e.preventDefault();const d=deals[c.dataset.i];
+    const txt=`${d.hook}\n${d.brand} ${d.title}\n${fmt(d.was)} ➡️ ${fmt(d.now)}${d.tag?"，"+d.tag:""}\n${d.link}`;
+    navigator.clipboard?.writeText(txt).then(()=>{const el=$("#toast");el.classList.add("on");setTimeout(()=>el.classList.remove("on"),1600)});}
+});
+renderTabs();
+fetch("deals.json").then(r=>r.json()).then(d=>{deals=d;render()}).catch(()=>{$("#feed").innerHTML='<p class="sub">加载失败，请刷新。</p>'});
+</script>
+</body>
+</html>

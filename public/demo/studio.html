@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>发布工具 · 演示</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<style>
+  :root{--bg:#f6f8f7;--card:#fff;--ink:#16211d;--muted:#66736e;--line:#e3e9e6;--mint:#0f9d76;--mint-soft:#e3f5ee;--hot:#e5484d}
+  @media (prefers-color-scheme:dark){:root{--bg:#0f1412;--card:#18201d;--ink:#e8efec;--muted:#93a29c;--line:#26302c;--mint:#3fd1a4;--mint-soft:#173129;--hot:#ff6b6f}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+  .demo-bar{background:#1d2b26;color:#cfe9df;font-size:12.5px;text-align:center;padding:7px 16px}
+  .demo-bar a{color:#7ff0c8}
+  .wrap{max-width:680px;margin:0 auto;padding:22px 16px 48px}
+  h1{font-size:22px;margin:0 0 4px}
+  .sub{color:var(--muted);font-size:13.5px}
+  form{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px;display:grid;gap:12px}
+  label{font-size:13px;color:var(--muted);display:grid;gap:4px}
+  input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;width:100%}
+  input:focus{outline:2px solid var(--mint);border-color:transparent}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  button{font:inherit;border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+  .go{background:var(--mint);color:#fff;font-weight:600}
+  .go[disabled]{opacity:.6}
+  .out{margin-top:18px;display:none;gap:12px}
+  .out.on{display:grid}
+  .deal{background:var(--card);border-radius:14px;border:1px solid var(--line);padding:14px;display:grid;grid-template-columns:64px 1fr;gap:12px}
+  .img{width:64px;height:64px;border-radius:12px;background:var(--mint-soft) center/cover no-repeat}
+  .hook{font-weight:650}
+  .price{color:var(--hot);font-weight:700}
+  pre{white-space:pre-wrap;word-break:break-all;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:0;font:13.5px/1.5 ui-monospace,Menlo,monospace}
+  .bar{display:flex;gap:8px;flex-wrap:wrap}
+  .ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .note{font-size:12.5px;color:var(--muted)}
+  .err{color:var(--hot);font-size:14px}
+  ul{padding-left:18px;margin:8px 0 0;color:var(--muted);font-size:13.5px}
+  @media (max-width:420px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="demo-bar">演示工具 · 不会真的发布，也不保存任何内容 · <a href="/">← 回到折扣站</a></div>
+<div class="wrap">
+  <h1>粘贴链接，30 秒发一条好价</h1>
+  <div class="sub">贴上商品链接，填原价和现价，自动生成折扣卡片和微信群文案。正式版会直接发布到你的折扣站，过期自动下架。</div>
+
+  <form id="f">
+    <label>商品链接
+      <input name="url" type="url" required placeholder="https://www.amazon.com/dp/... 或品牌官网商品页" autocomplete="off">
+    </label>
+    <div class="two">
+      <label>原价（可空，会尝试自动读取）<input name="was" inputmode="decimal" placeholder="98"></label>
+      <label>现价<input name="now" inputmode="decimal" placeholder="59"></label>
+    </div>
+    <div class="two">
+      <label>亮点（可空）<input name="note" maxlength="40" placeholder="黄金码补货 / 免运 / 限时一天"></label>
+      <label>Amazon 联盟 tag（可空）<input name="amazonTag" placeholder="yourtag-20"></label>
+    </div>
+    <label>商品名（读取不到时手填）<input name="title" placeholder="Align High-Rise Pant 25&quot;"></label>
+    <button class="go" id="go">生成卡片</button>
+    <div class="err" id="err" role="alert"></div>
+  </form>
+
+  <section class="out" id="out" aria-live="polite">
+    <div class="deal">
+      <div class="img" id="img"></div>
+      <div>
+        <div class="hook" id="hook"></div>
+        <div class="sub" id="title"></div>
+        <div class="price" id="price"></div>
+      </div>
+    </div>
+    <pre id="wechat"></pre>
+    <div class="bar">
+      <button class="go" id="copy" type="button">复制微信群文案</button>
+      <button class="ghost" type="button" disabled title="正式版功能">发布到折扣站（正式版）</button>
+    </div>
+    <div class="note" id="fetchnote"></div>
+  </section>
+
+  <h2 style="font-size:16px;margin-top:28px">正式版还会做什么</h2>
+  <ul>
+    <li>每天自动检查链接，售罄或恢复原价的折扣自动标记“已过期”</li>
+    <li>自动换成你自己的 LTK / ShopMy / Rakuten / Amazon 链接</li>
+    <li>每周自动生成“本周好价合集”页面，可分享到小红书、Facebook 群</li>
+    <li>用你自己的域名和品牌，没有平台抽成</li>
+  </ul>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+$("#f").addEventListener("submit",async e=>{
+  e.preventDefault();$("#err").textContent="";$("#go").disabled=true;$("#go").textContent="生成中…";
+  const body=Object.fromEntries(new FormData(e.target));
+  try{
+    const r=await fetch("/api/draft",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(!r.ok) throw new Error(d.error||"生成失败");
+    const c=d.card;
+    $("#hook").textContent=c.hook;
+    $("#title").textContent=[c.brand,c.title].filter(Boolean).join(" · ");
+    $("#price").textContent=c.priceLine;
+    $("#img").style.backgroundImage=c.image?`url("${c.image.replace(/"/g,"")}")`:"";
+    $("#wechat").textContent=d.wechat;
+    $("#fetchnote").textContent=c.fetched?"已从商品页读取标题和图片。":"这个商店挡住了自动读取，标题和价格请手填。";
+    $("#out").classList.add("on");
+  }catch(err){$("#err").textContent=err.message}
+  finally{$("#go").disabled=false;$("#go").textContent="生成卡片"}
+});
+$("#copy").addEventListener("click",()=>{navigator.clipboard?.writeText($("#wechat").textContent).then(()=>{$("#copy").textContent="已复制 ✓";setTimeout(()=>$("#copy").textContent="复制微信群文案",1500)})});
+</script>
+</body>
+</html>

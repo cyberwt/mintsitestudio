@@ -1,0 +1,22 @@
+[
+  {"cat":"beauty","brand":"Estée Lauder","hook":"【75折】【小棕瓶一拖三】","title":"Advanced Night Repair 一拖三套装","was":135,"now":101,"tag":"免运","age":2,"link":"https://www.esteelauder.com/"},
+  {"cat":"fashion","brand":"Lululemon","hook":"【黄金码补货】【We Made Too Much】","title":"Align High-Rise Pant 25\"","was":98,"now":69,"tag":"免运","age":3,"link":"https://shop.lululemon.com/"},
+  {"cat":"outdoor","brand":"Patagonia","hook":"【8折】【经典抓绒】","title":"Synchilla Snap-T 抓绒衫","was":149,"now":119,"tag":"免运","age":4,"link":"https://www.patagonia.com/"},
+  {"cat":"luxury","brand":"Longchamp","hook":"【42折】【半月包】","title":"Le Pliage 半月包","was":475,"now":199,"tag":"免运","age":5,"link":"https://www.longchamp.com/"},
+  {"cat":"beauty","brand":"Kiehl's","hook":"【送6件礼】【圣诞日历】","title":"节日倒数日历套装","was":228,"now":91,"tag":"免运","age":6,"link":"https://www.kiehls.com/"},
+  {"cat":"fashion","brand":"UGG","hook":"【应季6折】【黄金码还在】","title":"Tasman 便鞋","was":150,"now":89,"tag":"免运","age":8,"link":"https://www.ugg.com/"},
+  {"cat":"lifestyle","brand":"Touchland","hook":"【三件7折】【限量款也参加】","title":"Power Mist 免洗洗手喷雾","was":10,"now":7,"tag":"","age":9,"link":"https://touchland.com/"},
+  {"cat":"outdoor","brand":"Canada Goose","hook":"【6折】【三件再8折】","title":"Simcoe 抓绒外套","was":810,"now":486,"tag":"免运","age":11,"link":"https://www.canadagoose.com/"},
+  {"cat":"beauty","brand":"Shiseido","hook":"【75折闪促】【套装合3~4折】","title":"蓝胖子防晒 + 洁面","was":98,"now":39,"tag":"免运","age":14,"link":"https://www.shiseido.com/"},
+  {"cat":"fashion","brand":"Skims","hook":"【4折捡漏】【秋冬卫衣】","title":"Cotton Fleece 连帽卫衣","was":172,"now":69,"tag":"","age":16,"link":"https://skims.com/"},
+  {"cat":"lifestyle","brand":"Herman Miller","hook":"【满$2000减$500】【椅子组合54折】","title":"Aeron 办公椅组合","was":3550,"now":1929,"tag":"免运","age":20,"link":"https://store.hermanmiller.com/"},
+  {"cat":"luxury","brand":"Max Mara","hook":"【4x折】【应季好价】","title":"101801 经典大衣","was":4190,"now":1855,"tag":"免运","age":22,"link":"https://us.maxmara.com/"},
+  {"cat":"beauty","brand":"Lancôme","hook":"【新品全线7折】","title":"Absolue 抗老面霜","was":155,"now":108,"tag":"免运","age":26,"link":"https://www.lancome-usa.com/"},
+  {"cat":"fashion","brand":"Crocs","hook":"【新款史低】","title":"Ballet Flat","was":60,"now":39,"tag":"","age":30,"link":"https://www.crocs.com/"},
+  {"cat":"outdoor","brand":"Icebreaker","hook":"【58折】【美丽奴应季】","title":"美丽奴万用围脖","was":36,"now":21,"tag":"","age":34,"link":"https://www.icebreaker.com/"},
+  {"cat":"lifestyle","brand":"Dyson","hook":"【立省$100】【年度好价】","title":"Supersonic 吹风机","was":429,"now":329,"tag":"免运","age":40,"link":"https://www.dyson.com/"},
+  {"cat":"luxury","brand":"Mackage","hook":"【44折】【黄金码最后一件】","title":"Edward 羽绒服","was":1100,"now":490,"tag":"免运","age":46,"link":"https://www.mackage.com/"},
+  {"cat":"beauty","brand":"Summer Fridays","hook":"【5折】【一件免运】","title":"Lip Butter Balm 唇油","was":26,"now":13,"tag":"免运","age":60,"link":"https://summerfridays.com/"},
+  {"cat":"fashion","brand":"Polo Ralph Lauren","hook":"【再降！】【条纹衬衣】","title":"Classic Fit 条纹衬衫","was":125,"now":69,"tag":"免运","age":150,"link":"https://www.ralphlauren.com/","expired":true},
+  {"cat":"outdoor","brand":"Arc'teryx","hook":"【7折】【Atom 补码】","title":"Atom Hoody 轻量棉服","was":300,"now":210,"tag":"免运","age":170,"link":"https://arcteryx.com/","expired":true}
+]
