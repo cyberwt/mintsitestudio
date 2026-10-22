@@ -80,6 +80,10 @@
       all[game][date] = result;
       root.localStorage.setItem(KEY, JSON.stringify(all));
     } catch {}
+    // One GA4 event per finished puzzle (solved or given up).
+    if (typeof root.gtag === "function") {
+      root.gtag("event", "puzzle_complete", { game, solved: !!result.solved, past_day: date !== today() });
+    }
   }
   function result(game, date) {
     return (load()[game] || {})[date] || null;
