@@ -4,46 +4,93 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mint Puzzles: free daily number, sudoku and picture puzzles</title>
-<meta name="description" content="Three new free puzzles every day: Mint Sum, Mini Sudoku and Mint Nonogram. No signup, no download, works on phones. Play past days in the archive.">
+<meta name="description" content="Three new free puzzles every day: Mint Sum, Mini Sudoku and Mint Nonogram. Every puzzle and the whole archive are free. No subscription, no account.">
 <link rel="canonical" href="https://mintsitestudio.com/">
 <meta name="msvalidate.01" content="8F15DC2668203FF46531441753DB2DFD">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Zilla+Slab:wght@400;700&display=swap">
 <link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .hero{text-align:center;padding:34px 0 8px}
+  .hero h1{font-size:clamp(36px,9vw,58px);margin:10px 0 12px}
+  .hero .sub{font-size:18px;max-width:520px;margin:0 auto}
+  .games{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:34px 0 10px}
+  .gcard{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card);display:flex;flex-direction:column;text-decoration:none;color:var(--ink);transition:transform .12s,box-shadow .12s}
+  .gcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08)}
+  .gcard .art{height:132px;display:grid;place-items:center}
+  .gcard .art .icon{width:64px;height:64px}
+  .gcard .body{padding:16px 16px 18px;display:flex;flex-direction:column;flex:1}
+  .gcard h3{font:700 23px/1.15 var(--slab);margin:0 0 6px}
+  .gcard p{margin:0 0 16px;color:var(--muted);font-size:14.5px;flex:1}
+  .gcard .foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .gcard .btn.p{min-width:0;padding:11px 24px;font-size:14px}
+  .gcard .st{font-size:13px;font-weight:700;color:var(--muted)}
+  @media (max-width:640px){
+    .games{grid-template-columns:1fr;gap:12px}
+    .gcard{flex-direction:row}
+    .gcard .art{height:auto;width:104px;flex:none}
+    .gcard .art .icon{width:52px;height:52px}
+    .gcard p{margin-bottom:12px}
+  }
+  .free{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px}
+  .free div b{display:block;font:700 19px/1.2 var(--slab);margin-bottom:4px}
+  .free div span{color:var(--muted);font-size:15px}
+  @media (max-width:640px){.free{grid-template-columns:1fr;gap:16px}}
+  .rule{border:0;border-top:1px solid var(--line);margin:40px 0 0}
+</style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <a class="logo" href="/">🌿 Mint Puzzles</a>
-    <nav class="nav"><a href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
-  </div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><i></i>Mint Puzzles</a>
+  <nav class="nav"><a href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
+</div></header>
 
-  <h1>Three fresh puzzles, every day</h1>
-  <p class="sub" id="today"></p>
+<main class="wrap" style="max-width:980px">
+  <section class="hero">
+    <div class="eyebrow" id="today"></div>
+    <h1>Daily puzzles. Always free.</h1>
+    <p class="sub">Three new games every day, and every past puzzle in the archive. No subscription, no account, no paywall.</p>
+  </section>
 
-  <div class="games">
-    <a class="card game" href="/sum/"><b>Mint Sum</b><span>Combine six numbers with + − × ÷ to hit the target. Three rounds.</span><div class="st" data-g="sum"></div></a>
-    <a class="card game" href="/sudoku/"><b>Mini Sudoku</b><span>A 6×6 sudoku you can finish over coffee. One solution, no guessing.</span><div class="st" data-g="sudoku"></div></a>
-    <a class="card game" href="/nonogram/"><b>Mint Nonogram</b><span>Use the number clues to fill in a 10×10 grid. Pure logic.</span><div class="st" data-g="nonogram"></div></a>
-  </div>
+  <section class="games">
+    <a class="gcard" href="/sum/">
+      <div class="art" style="background:var(--sum)" data-icon="sum"></div>
+      <div class="body"><h3>Mint Sum</h3><p>Combine six numbers with + − × ÷ to hit the target. Three rounds, easy to hard.</p>
+        <div class="foot"><span class="btn p">Play</span><span class="st" data-g="sum"></span></div></div>
+    </a>
+    <a class="gcard" href="/sudoku/">
+      <div class="art" style="background:var(--sudoku)" data-icon="sudoku"></div>
+      <div class="body"><h3>Mini Sudoku</h3><p>A 6×6 sudoku you can finish over coffee. One solution, no guessing.</p>
+        <div class="foot"><span class="btn p">Play</span><span class="st" data-g="sudoku"></span></div></div>
+    </a>
+    <a class="gcard" href="/nonogram/">
+      <div class="art" style="background:var(--nonogram)" data-icon="nonogram"></div>
+      <div class="body"><h3>Mint Nonogram</h3><p>Use the number clues to fill in a 10×10 grid. Pure logic, one line at a time.</p>
+        <div class="foot"><span class="btn p">Play</span><span class="st" data-g="nonogram"></span></div></div>
+    </a>
+  </section>
 
-  <h2>How it works</h2>
-  <ul class="how">
-    <li>Everyone gets the same puzzles each day, and new ones appear at midnight your time.</li>
-    <li>No account or download. Your streaks are saved in this browser only.</li>
-    <li>Missed a day? Every past puzzle stays free to play from the archive under each game.</li>
-  </ul>
+  <hr class="rule">
+  <h2>Free means free</h2>
+  <section class="free">
+    <div><b>Every puzzle</b><span>Today's games are free to play, start to finish. No "subscribe to keep playing".</span></div>
+    <div><b>The whole archive</b><span>Missed a day? Every past puzzle stays free under each game.</span></div>
+    <div><b>No account</b><span>Just open the page and play. Streaks are saved in your browser.</span></div>
+  </section>
+</main>
 
-  <footer><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></footer>
-</div>
+<footer><div class="wrap"><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div></footer>
 <script src="/assets/mint.js"></script>
 <script>
   const t = Mint.today();
-  document.getElementById("today").textContent = `${Mint.prettyDate(t)} · Puzzle #${Mint.puzzleNumber(t)}`;
+  document.getElementById("today").textContent = `${Mint.prettyDate(t)} · No. ${Mint.puzzleNumber(t)}`;
+  document.querySelectorAll("[data-icon]").forEach((el) => (el.innerHTML = Mint.icon(el.dataset.icon)));
   document.querySelectorAll("[data-g]").forEach((el) => {
     const g = el.dataset.g, r = Mint.result(g, t), s = Mint.streak(g);
-    el.textContent = r && r.solved ? `✓ Solved today${s > 1 ? ` · ${s}-day streak` : ""}` : r ? "Played today" : "Play today's puzzle →";
+    el.textContent = r && r.solved ? `Solved ✓${s > 1 ? ` · ${s}-day streak` : ""}` : r ? "Played today" : "";
   });
 </script>
 </body>

@@ -1,39 +1,105 @@
-:root{--bg:#f6f8f7;--card:#fff;--ink:#16211d;--muted:#5d6a65;--line:#dfe6e3;--mint:#0f9d76;--mint-ink:#fff;--mint-soft:#e3f5ee;--bad:#d64545;--cell:#fff;--fill:#1d2b26;--sel:#cdeee2}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1412;--card:#18201d;--ink:#e8efec;--muted:#93a29c;--line:#2a3430;--mint:#3fd1a4;--mint-ink:#0b1a14;--mint-soft:#173129;--bad:#ff7b7b;--cell:#1d2622;--fill:#e8efec;--sel:#21473a}}
+/* Mint Puzzles. Clean newspaper-games look: white page, slab titles, one color per game. */
+:root{
+  --bg:#fff;--card:#fff;--ink:#121212;--muted:#5f6368;--line:#dcdcdc;--soft:#f4f4f2;
+  --key:#e6e6e3;--key-ink:#121212;--pill:#121212;--pill-ink:#fff;
+  --bad:#c8352d;--cell:#fff;--fill:#121212;
+  --sum:#8fd8b8;--sudoku:#ffcb57;--nonogram:#bcaeff;
+  --game:var(--sum);--game-soft:#e4f6ee;
+  --slab:"Zilla Slab",Rockwell,"Roboto Slab",Georgia,serif;
+  --sans:"Libre Franklin","Franklin Gothic Medium","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#121213;--card:#1a1a1b;--ink:#f5f5f5;--muted:#a5a8ad;--line:#3a3a3c;--soft:#1f1f21;
+  --key:#3a3a3c;--key-ink:#f5f5f5;--pill:#f5f5f5;--pill-ink:#121212;
+  --bad:#ff7b72;--cell:#1a1a1b;--fill:#f5f5f5;--game-soft:#1f3a2f;
+}}
+body.g-sum{--game:var(--sum)}
+body.g-sudoku{--game:var(--sudoku);--game-soft:#fff3d6}
+body.g-nonogram{--game:var(--nonogram);--game-soft:#eeeaff}
+@media (prefers-color-scheme:dark){
+  body.g-sum{--game-soft:#1f3a2f}
+  body.g-sudoku{--game-soft:#3d3218}
+  body.g-nonogram{--game-soft:#2c2745}
+}
+
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
-a{color:var(--mint)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans)}
+a{color:inherit}
 .wrap{max-width:720px;margin:0 auto;padding:0 16px}
-.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 0;flex-wrap:wrap}
-.logo{font-weight:800;font-size:19px;color:var(--ink);text-decoration:none;letter-spacing:-.01em}
-.nav{display:flex;gap:4px;flex-wrap:wrap}
-.nav a{color:var(--muted);text-decoration:none;font-size:14.5px;padding:6px 10px;border-radius:999px}
-.nav a.on,.nav a:hover{background:var(--mint-soft);color:var(--ink)}
-h1{font-size:clamp(26px,6vw,36px);line-height:1.15;margin:8px 0 6px;letter-spacing:-.02em}
-h2{font-size:18px;margin:30px 0 10px}
-.sub{color:var(--muted);margin:0 0 16px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-.btn{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;padding:10px 16px;border-radius:12px;cursor:pointer;text-decoration:none;display:inline-block;touch-action:manipulation}
-.btn.p{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
-.btn:disabled{opacity:.4;cursor:default}
+
+/* Masthead */
+.top{border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+.top .wrap,footer .wrap{max-width:980px}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px;height:56px}
+.logo{font:700 22px/1 var(--slab);color:var(--ink);text-decoration:none;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.logo i{width:22px;height:22px;border-radius:6px;background:var(--sum);display:inline-block;position:relative}
+.logo i::after{content:"";position:absolute;inset:6px;border-radius:2px;background:var(--ink)}
+.nav{display:flex;gap:2px}
+.nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:6px 10px;border-radius:999px}
+.nav a.on,.nav a:hover{color:var(--ink);background:var(--soft)}
+.logo{white-space:nowrap}
+@media (max-width:420px){.nav a{padding:6px 6px;font-size:13px}.logo{font-size:18px;gap:6px}.logo i{width:18px;height:18px}.logo i::after{inset:5px}}
+
+h1{font:700 clamp(30px,7vw,44px)/1.08 var(--slab);margin:28px 0 8px;letter-spacing:-.01em}
+h2{font:700 22px/1.2 var(--slab);margin:36px 0 12px}
+.sub{color:var(--muted);margin:0 0 18px}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Buttons: grey keys, black pills */
+.btn{appearance:none;border:0;background:var(--key);color:var(--key-ink);font:700 15px/1 var(--sans);padding:13px 18px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;touch-action:manipulation;transition:transform .06s}
+.btn:active{transform:scale(.97)}
+.btn.p{background:var(--pill);color:var(--pill-ink);border-radius:999px;padding:14px 30px;min-width:150px}
+.btn.o{background:transparent;color:var(--ink);border:1.5px solid var(--ink);border-radius:999px;padding:12.5px 26px}
+.btn:disabled{opacity:.35;cursor:default;transform:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.bar{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14.5px;margin:6px 0 12px;gap:8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{font-size:14px;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none}
-.chip.on{border-color:var(--mint);background:var(--mint-soft)}
-.msg{min-height:24px;color:var(--muted);font-size:14.5px;margin:10px 0}
+
+/* Game screen */
+.gamehead{display:flex;align-items:center;gap:12px;margin:22px 0 4px}
+.gamehead .icon{width:44px;height:44px;flex:none}
+.gamehead h1{margin:0;font-size:clamp(26px,6vw,34px)}
+.gamehead p{margin:2px 0 0;color:var(--muted);font-size:14.5px}
+.board-area{margin:18px 0 8px}
+.bar{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:14.5px;font-weight:600;margin:6px 0 12px;gap:8px;font-variant-numeric:tabular-nums}
+.msg{min-height:24px;color:var(--muted);font-size:14.5px;margin:12px 0;text-align:center}
 .msg.bad{color:var(--bad)}
-.done{background:var(--mint-soft);border:1px solid var(--mint);border-radius:16px;padding:16px;margin:16px 0}
-.done b{font-size:18px}
-.how{color:var(--muted);font-size:15px}
-.how li{margin:4px 0}
-footer{margin:48px 0 32px;color:var(--muted);font-size:14px;display:flex;gap:14px;flex-wrap:wrap}
-footer a{color:var(--muted)}
-.games{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin:18px 0}
-.game{display:block;text-decoration:none;color:var(--ink)}
-.game b{font-size:18px;display:block}
-.game span{color:var(--muted);font-size:14.5px}
-.game .st{margin-top:10px;font-size:14px;color:var(--mint);font-weight:600}
+
+/* Result card */
+.done{border:1px solid var(--line);border-radius:12px;padding:22px 18px;margin:20px 0;text-align:center;background:var(--card)}
+.done .eyebrow{color:var(--ink)}
+.done b{display:block;font:700 28px/1.15 var(--slab);margin:6px 0 4px}
+.done .stats{display:flex;justify-content:center;gap:28px;margin:16px 0 18px}
+.done .stats div{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.done .stats span{display:block;font:700 26px/1.1 var(--sans);color:var(--ink);letter-spacing:0;text-transform:none}
+
+/* Splash: full-color welcome screen in front of each game */
+.splash{position:fixed;inset:0;z-index:20;background:var(--game);color:#121212;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;overflow:auto}
+.splash[hidden]{display:none}
+.splash .icon{width:72px;height:72px;margin-bottom:14px}
+.splash h1{font:700 clamp(36px,9vw,52px)/1.05 var(--slab);margin:0 0 10px;color:#121212}
+.splash .tag{font:400 clamp(20px,5vw,26px)/1.3 var(--slab);max-width:420px;margin:0 0 28px}
+.splash .btn.p{background:#121212;color:#fff}
+.splash .btn.o{border-color:#121212;color:#121212}
+.splash .meta{margin-top:26px;font-size:14px;line-height:1.5}
+.splash .meta b{display:block;font-size:15px}
+.splash .free{margin-top:18px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+body.splashing{overflow:hidden}
+
+/* Chips (archive) */
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:14px;font-weight:600;padding:7px 12px;border-radius:999px;background:var(--soft);color:var(--ink);text-decoration:none}
+.chip.on{background:var(--game);color:#121212}
+
+.how{color:var(--ink);font-size:15.5px;padding-left:20px}
+.how li{margin:6px 0}
+.how li::marker{color:var(--muted)}
+
+footer{border-top:1px solid var(--line);margin-top:56px}
+footer .wrap{padding-top:22px;padding-bottom:36px;color:var(--muted);font-size:14px;display:flex;gap:16px;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--ink)}
+
 @keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 .shake{animation:shake .2s 2}
+@keyframes pop{50%{transform:scale(1.08)}}
+.pop{animation:pop .25s}

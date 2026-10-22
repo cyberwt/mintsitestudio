@@ -277,7 +277,7 @@
   // Links to the other games and to past days, shown under every game.
   function renderMore(el, game) {
     const date = pageDate();
-    const names = { sum: "Mint Sum", sudoku: "Mini Sudoku", nonogram: "Mint Nonogram" };
+    const names = NAMES;
     const others = Object.keys(names).filter((g) => g !== game).map((g) => {
       const done = result(g, today());
       return `<a class="chip" href="/${g}/">${names[g]}${done && done.solved ? " ✓" : ""}</a>`;
@@ -289,7 +289,61 @@
       past += `<a class="chip${d === date ? " on" : ""}" href="/${game}/${d}">#${puzzleNumber(d)} ${prettyDate(d).replace(/, \d{4}$/, "")}${mark}</a>`;
     }
     el.innerHTML = `<h2>Play next</h2><div class="chips">${others.join("")}</div>
-      <h2>Past puzzles</h2><div class="chips">${past}</div>`;
+      <h2>Archive</h2><p class="sub" style="margin-top:-6px">Every past puzzle is free to play.</p><div class="chips">${past}</div>`;
+  }
+
+  // ---- Look: icons, splash screen, result card ---------------------------------
+
+  const NAMES = { sum: "Mint Sum", sudoku: "Mini Sudoku", nonogram: "Mint Nonogram" };
+  const TAGS = {
+    sum: "Make the numbers hit the target.",
+    sudoku: "Fill the grid with 1 to 6. Six minutes of calm.",
+    nonogram: "Use the clues to reveal the picture.",
+  };
+  const COLORS = { sum: "#8fd8b8", sudoku: "#ffcb57", nonogram: "#bcaeff" };
+  const INK = "#121212";
+  function icon(game) {
+    const frame = `<rect x="2" y="2" width="44" height="44" rx="10" fill="${COLORS[game]}" stroke="${INK}" stroke-width="3"/>`;
+    const art = {
+      sum: `<path d="M10 24h12M16 18v12M27 20.5h11M27 27.5h11" stroke="${INK}" stroke-width="3.5" stroke-linecap="round"/>`,
+      sudoku: `<path d="M24 3.5v41M3.5 17.3h41M3.5 30.7h41" stroke="${INK}" stroke-width="2.5"/><rect x="24" y="17.3" width="20.5" height="13.4" fill="${INK}"/>`,
+      nonogram: [[0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [3, 0], [3, 3]]
+        .map(([r, c]) => `<rect x="${10 + c * 7.5}" y="${10 + r * 7.5}" width="6.5" height="6.5" rx="1" fill="${INK}"/>`).join(""),
+    }[game];
+    return `<svg class="icon" viewBox="0 0 48 48" aria-hidden="true">${frame}${art}</svg>`;
+  }
+
+  // Full-color welcome screen. Stays up until the player taps Play.
+  function splash(game) {
+    root.document.querySelectorAll("[data-icon]").forEach((x) => (x.innerHTML = icon(x.dataset.icon)));
+    const el = root.document.getElementById("splash");
+    if (!el) return;
+    const date = pageDate();
+    const r = result(game, date);
+    el.innerHTML = `${icon(game)}<h1>${NAMES[game]}</h1><p class="tag">${TAGS[game]}</p>
+      <button class="btn p" id="splashGo">${r ? "See your result" : date === today() ? "Play" : "Play this day"}</button>
+      <div class="meta"><b>${prettyDate(date)}</b>No. ${puzzleNumber(date)}</div>
+      <div class="free">Free to play · No account</div>`;
+    root.document.body.classList.add("splashing");
+    el.hidden = false;
+    root.document.getElementById("splashGo").onclick = () => {
+      el.hidden = true;
+      root.document.body.classList.remove("splashing");
+      if (r) { const d = root.document.getElementById("done"); if (d) d.scrollIntoView({ block: "center" }); }
+    };
+  }
+
+  // Result card shown when a puzzle is finished. stats = [[label, value], ...]
+  function renderDone(el, { eyebrow, title, stats, shareText }) {
+    el.hidden = false;
+    el.innerHTML = `<div class="eyebrow">${eyebrow}</div><b>${title}</b>
+      <div class="stats">${stats.map(([k, v]) => `<div><span>${v}</span>${k}</div>`).join("")}</div>
+      <div class="row" style="justify-content:center"><button class="btn p" id="share">Share</button><a class="btn o" href="/">More puzzles</a></div>`;
+    el.querySelector("#share").onclick = (e) => share(shareText, e.target);
+    // A puzzle just finished (not a result restored behind the splash): bring the card into view.
+    if (!root.document.body.classList.contains("splashing")) {
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 350);
+    }
   }
 
   async function share(text, btn) {
@@ -299,14 +353,15 @@
         return;
       }
       await root.navigator.clipboard.writeText(text);
+      const was = btn.textContent;
       btn.textContent = "Copied!";
-      setTimeout(() => (btn.textContent = "Share result"), 1600);
+      setTimeout(() => (btn.textContent = was), 1600);
     } catch {}
   }
 
   root.Mint = {
     LAUNCH, rng, hash, today, addDays, prettyDate, puzzleNumber, pageDate,
-    save, result, streak, fmtTime, renderMore, share,
+    save, result, streak, fmtTime, renderMore, share, icon, splash, renderDone, NAMES,
     sumPuzzle, sudokuPuzzle, sudokuCount, nonogramPuzzle, lineSolve, runs,
   };
 })(typeof window !== "undefined" ? window : globalThis);

@@ -6,39 +6,42 @@
 <title>Mint Sum: free daily number puzzle | Mint Puzzles</title>
 <meta name="description" content="Combine six numbers with plus, minus, times and divide to hit the target. A new free number puzzle every day, three rounds, no signup.">
 <link rel="canonical" href="https://mintsitestudio.com/sum/">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Zilla+Slab:wght@400;700&display=swap">
 <link rel="stylesheet" href="/assets/mint.css">
 <style>
-  .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
-  .lv{font-size:14.5px;padding:8px 4px;text-align:center}
-  .lv.on{border-color:var(--mint);background:var(--mint-soft)}
-  .target{text-align:center;margin:6px 0 14px}
-  .target small{display:block;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
-  .target b{font-size:52px;line-height:1.1;font-variant-numeric:tabular-nums}
-  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px;margin:0 auto}
-  .tile{aspect-ratio:1.4;font-size:28px;font-weight:700;border-radius:14px;font-variant-numeric:tabular-nums}
-  .tile.sel{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
+  .levels{display:flex;justify-content:center;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
+  .lv{background:none;border-radius:0;padding:10px 14px 12px;font-size:15px;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+  .lv.on{color:var(--ink);border-bottom-color:var(--ink)}
+  .target{text-align:center;margin:4px 0 18px}
+  .target small{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .target b{display:inline-block;font:700 60px/1.05 var(--slab);font-variant-numeric:tabular-nums;background:var(--game);color:#121212;border-radius:12px;padding:4px 22px;margin-top:6px}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:330px;margin:0 auto}
+  .tile{aspect-ratio:1;border-radius:50%;font:700 30px/1 var(--sans);background:var(--card);color:var(--ink);border:2px solid var(--line);font-variant-numeric:tabular-nums;padding:0}
+  .tile.sel{background:var(--game);border-color:var(--ink);color:#121212}
   .tile.gone{visibility:hidden}
-  .tile.hit{background:var(--mint);color:var(--mint-ink);border-color:var(--mint)}
-  .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:360px;margin:14px auto 0}
-  .op{font-size:26px;padding:8px 0}
-  .op.sel{background:var(--mint-soft);border-color:var(--mint)}
-  .ctl{justify-content:center;margin-top:14px}
-  .sol{font-variant-numeric:tabular-nums;margin:8px 0 0;padding-left:20px}
+  .tile.hit{background:var(--game);border-color:var(--ink);color:#121212}
+  .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:300px;margin:20px auto 0}
+  .op{aspect-ratio:1;border-radius:50%;font-size:28px;padding:0;background:var(--key)}
+  .op.sel{background:var(--ink);color:var(--bg)}
+  .ctl{justify-content:center;margin-top:20px}
+  .ctl .btn{background:none;border:1.5px solid var(--line);border-radius:999px;padding:10px 16px;font-size:14px}
+  .sol{font-variant-numeric:tabular-nums;margin:8px auto 0;padding-left:20px;max-width:260px;font-weight:600}
 </style>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
 </head>
-<body>
+<body class="g-sum">
+<div class="splash" id="splash" hidden></div>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><i></i>Mint Puzzles</a>
+  <nav class="nav"><a class="on" href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
+</div></header>
 <div class="wrap">
-  <div class="top">
-    <a class="logo" href="/">🌿 Mint Puzzles</a>
-    <nav class="nav"><a class="on" href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
-  </div>
-  <h1 id="h">Mint Sum</h1>
-  <p class="sub" id="d"></p>
+  <div class="gamehead"><span data-icon="sum"></span><div><h1 id="h">Mint Sum</h1><p id="d"></p></div></div>
 
-  <div class="card">
+  <div class="board-area">
     <div class="levels" id="levels"></div>
     <div class="target"><small>Target</small><b id="target"></b></div>
     <div class="tiles" id="tiles"></div>
@@ -63,16 +66,17 @@
   </ul>
 
   <div id="more"></div>
-  <footer><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></footer>
 </div>
+<footer><div class="wrap"><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div></footer>
 <script src="/assets/mint.js"></script>
+<script>Mint.splash("sum");</script>
 <script>
 (() => {
   const date = Mint.pageDate();
   const n = Mint.puzzleNumber(date);
   const rounds = Mint.sumPuzzle(date);
-  document.getElementById("h").textContent = `Mint Sum #${n}`;
-  document.getElementById("d").textContent = `${Mint.prettyDate(date)}${date === Mint.today() ? " · today's puzzle" : ""}`;
+  document.getElementById("h").textContent = `Mint Sum`;
+  document.getElementById("d").textContent = `${Mint.prettyDate(date)} · No. ${Mint.puzzleNumber(date)}${date === Mint.today() ? " · Today" : ""}`;
 
   const $ = (id) => document.getElementById(id);
   const saved = Mint.result("sum", date);
@@ -187,13 +191,13 @@
 
   function showDone(r) {
     const squares = r.levels.map((l) => (l === "solved" ? "🟩" : "🟥")).join("");
-    const streak = Mint.streak("sum");
-    const head = r.solved ? "All three rounds solved" : `${r.levels.filter((l) => l === "solved").length} of 3 rounds solved`;
-    $("done").hidden = false;
-    $("done").innerHTML = `<b>${head} ${squares}</b>
-      <p class="sub" style="margin:6px 0 12px">${streak > 1 ? `${streak}-day streak. ` : ""}A new puzzle arrives at midnight.</p>
-      <button class="btn p" id="share">Share result</button>`;
-    $("share").onclick = (e) => Mint.share(`Mint Sum #${n} ${squares}\nhttps://mintsitestudio.com/sum/`, e.target);
+    const solved = r.levels.filter((l) => l === "solved").length;
+    Mint.renderDone($("done"), {
+      eyebrow: `Mint Sum No. ${n}`,
+      title: solved === 3 ? "All three. Nicely done." : solved ? `${solved} of 3 rounds solved` : "There's always tomorrow",
+      stats: [["Rounds", `${solved}/3`], ["Time", Mint.fmtTime(r.time)], ["Streak", Mint.streak("sum")]],
+      shareText: `Mint Sum No. ${n} ${squares}\nhttps://mintsitestudio.com/sum/`,
+    });
   }
 
   if (saved) showDone(saved);
