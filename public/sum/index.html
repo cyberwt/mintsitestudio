@@ -8,7 +8,7 @@
 <link rel="canonical" href="https://mintsitestudio.com/sum/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
 <link rel="stylesheet" href="/assets/mint.css">
 <style>
   .levels{display:flex;justify-content:center;gap:4px;border-bottom:1px solid var(--line);margin-bottom:18px}
@@ -36,7 +36,7 @@
 <div class="splash" id="splash" hidden></div>
 <header class="top"><div class="wrap">
   <a class="logo" href="/"><i></i>Mint Puzzles</a>
-  <nav class="nav"><a class="on" href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
+  <nav class="nav"><a class="on" href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
 </div></header>
 <div class="wrap">
   <div class="gamehead"><span data-icon="sum"></span><div><h1 id="h">Mint Sum</h1><p id="d"></p></div></div>
@@ -67,7 +67,11 @@
 
   <div id="more"></div>
 </div>
-<footer><div class="wrap"><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div></footer>
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
+  <div class="fcol"><b>Games</b><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
+  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+</div></footer>
 <script src="/assets/mint.js"></script>
 <script>Mint.splash("sum");</script>
 <script>
