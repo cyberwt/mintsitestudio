@@ -33,15 +33,20 @@
 </head>
 <body class="g-nonogram">
 <div class="splash" id="splash" hidden></div>
-<header class="top"><div class="wrap">
-  <a class="logo" href="/"><i></i>Mint Puzzles</a>
-  <nav class="nav"><a href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a class="on" href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
+<header class="gbar"><div class="wrap">
+  <a class="back" href="/" aria-label="All puzzles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+  <span data-icon="nonogram"></span>
+  <div class="gt"><h1 id="h">Mint Nonogram</h1><span id="d"></span></div>
+  <div class="tools">
+    <button class="clock" id="clock" aria-label="Pause"><span id="timer">0:00</span><svg viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
+    <button class="tb" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.4"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg></button>
+    <button class="tb" id="statsBtn" aria-label="Statistics"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="12" width="4" height="8.5" rx="1"/><rect x="10" y="4" width="4" height="16.5" rx="1"/><rect x="16.5" y="8.5" width="4" height="12" rx="1"/></svg></button>
+  </div>
 </div></header>
 <div class="wrap">
-  <div class="gamehead"><span data-icon="nonogram"></span><div><h1 id="h">Mint Nonogram</h1><p id="d"></p></div></div>
 
   <div class="board-area">
-    <div class="bar"><span id="timer">0:00</span><button class="btn" id="clear" style="padding:6px 12px">Clear</button></div>
+    <div class="bar"><button class="btn" id="clear" style="padding:6px 12px">Clear</button></div>
     <div class="board" id="board"></div>
     <div class="row mode">
       <button class="btn on" id="mFill">■ Fill</button>
@@ -76,13 +81,13 @@
   const num = Mint.puzzleNumber(date);
   const { n, rowClues, colClues, solution } = Mint.nonogramPuzzle(date);
   $("h").textContent = `Mint Nonogram`;
-  $("d").textContent = `${Mint.prettyDate(date)} · No. ${Mint.puzzleNumber(date)}${date === Mint.today() ? " · Today" : ""}`;
+  $("d").textContent = `No. ${Mint.puzzleNumber(date)} · ${Mint.prettyDate(date)}${date === Mint.today() ? " · Today" : ""}`;
 
   const saved = Mint.result("nonogram", date);
   // 0 empty, 1 filled, 2 marked empty
   const cells = saved && saved.solved ? solution.slice() : new Array(n * n).fill(0);
   let done = !!(saved && saved.solved);
-  let mode = 1, paint = null, secs = 0, timer = null;
+  let mode = 1, paint = null;
 
   // Build the board once; updates only toggle classes.
   const board = $("board");
@@ -123,7 +128,7 @@
     // Dragging never overwrites the other kind of mark.
     if (paint !== 0 && cells[i] !== 0) return;
     cells[i] = paint;
-    if (!timer) timer = setInterval(() => { secs++; $("timer").textContent = Mint.fmtTime(secs); }, 1000);
+    Mint.clock.start();
     update();
   }
 
@@ -156,16 +161,15 @@
 
   function win() {
     done = true;
-    clearInterval(timer);
     for (let i = 0; i < cells.length; i++) if (cells[i] === 2) cells[i] = 0;
     update();
-    const r = { solved: true, time: secs };
+    const r = { solved: true, time: Mint.clock.secs };
     Mint.save("nonogram", date, r);
     showDone(r);
   }
 
   function showDone(r) {
-    $("timer").textContent = Mint.fmtTime(r.time);
+    Mint.clock.set(r.time);
     $("clear").disabled = true;
     Mint.renderDone($("done"), {
       eyebrow: `Mint Nonogram No. ${num}`,

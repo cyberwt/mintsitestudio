@@ -34,12 +34,17 @@
 </head>
 <body class="g-sum">
 <div class="splash" id="splash" hidden></div>
-<header class="top"><div class="wrap">
-  <a class="logo" href="/"><i></i>Mint Puzzles</a>
-  <nav class="nav"><a class="on" href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
+<header class="gbar"><div class="wrap">
+  <a class="back" href="/" aria-label="All puzzles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+  <span data-icon="sum"></span>
+  <div class="gt"><h1 id="h">Mint Sum</h1><span id="d"></span></div>
+  <div class="tools">
+    <button class="clock" id="clock" aria-label="Pause"><span id="timer">0:00</span><svg viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
+    <button class="tb" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.4"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg></button>
+    <button class="tb" id="statsBtn" aria-label="Statistics"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="12" width="4" height="8.5" rx="1"/><rect x="10" y="4" width="4" height="16.5" rx="1"/><rect x="16.5" y="8.5" width="4" height="12" rx="1"/></svg></button>
+  </div>
 </div></header>
 <div class="wrap">
-  <div class="gamehead"><span data-icon="sum"></span><div><h1 id="h">Mint Sum</h1><p id="d"></p></div></div>
 
   <div class="board-area">
     <div class="levels" id="levels"></div>
@@ -80,7 +85,7 @@
   const n = Mint.puzzleNumber(date);
   const rounds = Mint.sumPuzzle(date);
   document.getElementById("h").textContent = `Mint Sum`;
-  document.getElementById("d").textContent = `${Mint.prettyDate(date)} · No. ${Mint.puzzleNumber(date)}${date === Mint.today() ? " · Today" : ""}`;
+  document.getElementById("d").textContent = `No. ${Mint.puzzleNumber(date)} · ${Mint.prettyDate(date)}${date === Mint.today() ? " · Today" : ""}`;
 
   const $ = (id) => document.getElementById(id);
   const saved = Mint.result("sum", date);
@@ -93,7 +98,6 @@
   let cur = state.findIndex((s) => s.status === "play");
   if (cur < 0) cur = 0;
   let sel = -1, op = null;
-  const started = Date.now();
 
   function say(text, bad) {
     $("msg").textContent = text;
@@ -133,6 +137,7 @@
     const b = e.target.closest("[data-t]");
     if (!b) return;
     const s = state[cur], j = +b.dataset.t;
+    Mint.clock.start();
     if (sel === -1 || j === sel) { sel = j === sel ? -1 : j; op = null; say(""); return render(); }
     if (!op) { sel = j; return render(); }
     const a = s.tiles[sel].v, c = s.tiles[j].v;
@@ -183,7 +188,7 @@
       const result = {
         solved: state.every((s) => s.status === "solved"),
         levels: state.map((s) => s.status),
-        time: Math.round((Date.now() - started) / 1000),
+        time: Mint.clock.secs,
       };
       Mint.save("sum", date, result);
       showDone(result);
@@ -196,6 +201,7 @@
   function showDone(r) {
     const squares = r.levels.map((l) => (l === "solved" ? "🟩" : "🟥")).join("");
     const solved = r.levels.filter((l) => l === "solved").length;
+    Mint.clock.set(r.time || 0);
     Mint.renderDone($("done"), {
       eyebrow: `Mint Sum No. ${n}`,
       title: solved === 3 ? "All three. Nicely done." : solved ? `${solved} of 3 rounds solved` : "There's always tomorrow",

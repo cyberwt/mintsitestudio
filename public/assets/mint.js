@@ -292,7 +292,7 @@
       <h2>Archive</h2><p class="sub" style="margin-top:-6px">Every past puzzle is free to play.</p><div class="chips">${past}</div>`;
   }
 
-  // ---- Look: icons, splash screen, result card ---------------------------------
+  // ---- Look: icons, toolbar, splash, modals, result card ------------------------
 
   const NAMES = { sum: "Mint Sum", sudoku: "Mini Sudoku", nonogram: "Mint Nonogram" };
   const TAGS = {
@@ -300,6 +300,7 @@
     sudoku: "Fill the grid with 1 to 6. Six minutes of calm.",
     nonogram: "Use the clues to reveal the picture.",
   };
+  const LENGTHS = { sum: "About 5 minutes", sudoku: "About 6 minutes", nonogram: "About 10 minutes" };
   const COLORS = { sum: "#8fd8b8", sudoku: "#ffcb57", nonogram: "#bcaeff" };
   const INK = "#121212";
   function icon(game) {
@@ -313,36 +314,191 @@
     return `<svg class="icon" viewBox="0 0 48 48" aria-hidden="true">${frame}${art}</svg>`;
   }
 
-  // Full-color welcome screen. Stays up until the player taps Play.
-  function splash(game) {
-    root.document.querySelectorAll("[data-icon]").forEach((x) => (x.innerHTML = icon(x.dataset.icon)));
-    const el = root.document.getElementById("splash");
-    if (!el) return;
-    const date = pageDate();
-    const r = result(game, date);
-    el.innerHTML = `${icon(game)}<h1>${NAMES[game]}</h1><p class="tag">${TAGS[game]}</p>
-      <button class="btn p" id="splashGo">${r ? "See your result" : date === today() ? "Play" : "Play this day"}</button>
-      <div class="meta"><b>${prettyDate(date)}</b>No. ${puzzleNumber(date)}</div>
-      <div class="free">Free to play · No account</div>`;
-    root.document.body.classList.add("splashing");
-    el.hidden = false;
-    root.document.getElementById("splashGo").onclick = () => {
-      el.hidden = true;
-      root.document.body.classList.remove("splashing");
-      if (r) { const d = root.document.getElementById("done"); if (d) d.scrollIntoView({ block: "center" }); }
-    };
+  // Played, solve rate, current and longest streak, from this browser's history.
+  function stats(game) {
+    const days = load()[game] || {};
+    const keys = Object.keys(days).sort();
+    let max = 0, run = 0, prev = null;
+    for (const k of keys) {
+      if (days[k].solved) run = prev && days[prev].solved && addDays(prev, 1) === k ? run + 1 : 1;
+      else run = 0;
+      max = Math.max(max, run);
+      prev = k;
+    }
+    const solved = keys.filter((k) => days[k].solved).length;
+    return { played: keys.length, pct: keys.length ? Math.round((solved / keys.length) * 100) : 0, current: streak(game), max };
   }
 
-  // Result card shown when a puzzle is finished. stats = [[label, value], ...]
-  function renderDone(el, { eyebrow, title, stats, shareText }) {
+  // The game clock in the toolbar. Starts on the first move, pauses with the pause
+  // screen or when the tab is hidden, and stops when the puzzle is finished.
+  const clock = {
+    secs: 0, running: false, paused: false, done: false, t: null,
+    start() {
+      if (this.running || this.done) return;
+      this.running = true;
+      this.t = setInterval(() => { if (!this.paused) { this.secs++; this.show(); } }, 1000);
+    },
+    stop() { this.done = true; this.running = false; clearInterval(this.t); this.show(); },
+    set(s) { this.secs = s; this.show(); },
+    show() {
+      const el = root.document.getElementById("timer");
+      if (el) el.textContent = fmtTime(this.secs);
+      const b = root.document.getElementById("clock");
+      if (b) b.classList.toggle("live", this.running && !this.paused);
+    },
+    pause() {
+      if (!this.running || this.paused) return;
+      this.paused = true; this.show();
+      openOverlay("pause", `${icon(Mint.game)}<h2>Your game is paused.</h2><p class="tag">Ready to play?</p>
+        <button class="btn p" data-close>Resume</button><div class="meta"><b>${fmtTime(this.secs)}</b>on the clock</div>`,
+        () => { this.paused = false; this.show(); });
+    },
+  };
+
+  // Full-screen colored overlay (splash and pause share it).
+  function openOverlay(kind, html, onClose) {
+    const el = root.document.getElementById("splash");
+    if (!el) return;
+    el.className = "splash " + kind;
+    el.innerHTML = html;
     el.hidden = false;
-    el.innerHTML = `<div class="eyebrow">${eyebrow}</div><b>${title}</b>
-      <div class="stats">${stats.map(([k, v]) => `<div><span>${v}</span>${k}</div>`).join("")}</div>
-      <div class="row" style="justify-content:center"><button class="btn p" id="share">Share</button><a class="btn o" href="/">More puzzles</a></div>`;
-    el.querySelector("#share").onclick = (e) => share(shareText, e.target);
-    // A puzzle just finished (not a result restored behind the splash): bring the card into view.
+    root.document.body.classList.add("splashing");
+    const close = () => {
+      el.hidden = true;
+      root.document.body.classList.remove("splashing");
+      if (onClose) onClose();
+    };
+    el.querySelectorAll("[data-close]").forEach((b) => (b.onclick = close));
+    const first = el.querySelector("button");
+    if (first) first.focus({ preventScroll: true });
+    return close;
+  }
+
+  // Centered card over a dimmed page. Esc, the ✕ or the backdrop closes it.
+  let closeModal = null;
+  function modal(html, cls = "") {
+    if (closeModal) closeModal();
+    const d = root.document;
+    const wrap = d.createElement("div");
+    wrap.className = "modal " + cls;
+    wrap.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><button class="x" aria-label="Close">✕</button>${html}</div>`;
+    d.body.appendChild(wrap);
+    d.body.classList.add("modaling");
+    const last = d.activeElement;
+    const onKey = (e) => { if (e.key === "Escape") closeModal(); };
+    closeModal = () => {
+      wrap.remove();
+      d.body.classList.remove("modaling");
+      d.removeEventListener("keydown", onKey);
+      clearInterval(wrap._tick);
+      closeModal = null;
+      if (last && last.focus) last.focus({ preventScroll: true });
+    };
+    wrap.onclick = (e) => { if (e.target === wrap || e.target.closest(".x,[data-close]")) closeModal(); };
+    d.addEventListener("keydown", onKey);
+    wrap.querySelector(".x").focus({ preventScroll: true });
+    return wrap;
+  }
+
+  function help(game) {
+    const how = root.document.querySelector(".how");
+    modal(`<div class="mh">${icon(game)}<div><h2>How to play</h2><p>${TAGS[game]}</p></div></div>
+      <ul class="how">${how ? how.innerHTML : ""}</ul>
+      <p class="fine">A new puzzle every day at midnight, your time. Every past puzzle stays free in the archive.</p>
+      <button class="btn p wide" data-close>Got it</button>`, "help");
+    try { root.localStorage.setItem("mint:seen:" + game, "1"); } catch {}
+  }
+
+  function untilMidnight() {
+    const now = new Date(), next = new Date(now);
+    next.setHours(24, 0, 0, 0);
+    const s = Math.max(0, Math.floor((next - now) / 1000));
+    const p = (n) => String(n).padStart(2, "0");
+    return `${p(Math.floor(s / 3600))}:${p(Math.floor(s / 60) % 60)}:${p(s % 60)}`;
+  }
+
+  // Your stats, plus "Next puzzle in" and the games still to play today.
+  function statsHtml(game) {
+    const s = stats(game);
+    const cells = [["Played", s.played], ["Solved %", s.pct], ["Current streak", s.current], ["Max streak", s.max]];
+    const next = Object.keys(NAMES).filter((g) => g !== game && !result(g, today()));
+    const isToday = pageDate() === today();
+    return `<div class="sh">Your statistics</div>
+      <div class="kpis">${cells.map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join("")}</div>
+      ${isToday
+        ? `<div class="next"><span>Next puzzle in</span><b data-count>${untilMidnight()}</b></div>`
+        : `<div class="next"><span>You’re playing No. ${puzzleNumber(pageDate())}</span><a href="/${game}/">Play today’s →</a></div>`}
+      ${next.length ? `<div class="sh">Up next</div><div class="upnext">${next.map((g) => `<a href="/${g}/" style="--c:${COLORS[g]}">${icon(g)}<span><b>${NAMES[g]}</b>${TAGS[g]}</span><i>Play</i></a>`).join("")}</div>` : ""}`;
+  }
+  function tickCountdown(wrap) {
+    const el = wrap.querySelector("[data-count]");
+    if (el) wrap._tick = setInterval(() => (el.textContent = untilMidnight()), 1000);
+  }
+  function showStats(game) {
+    const w = modal(`<div class="mh">${icon(game)}<div><h2>${NAMES[game]}</h2><p>${prettyDate(pageDate())} · No. ${puzzleNumber(pageDate())}</p></div></div>${statsHtml(game)}`, "stats");
+    tickCountdown(w);
+  }
+
+  // Toolbar buttons and auto-pause. Called once per game page by splash().
+  function toolbar(game) {
+    const d = root.document, $ = (id) => d.getElementById(id);
+    if ($("clock")) $("clock").onclick = () => clock.pause();
+    if ($("helpBtn")) $("helpBtn").onclick = () => help(game);
+    if ($("statsBtn")) $("statsBtn").onclick = () => (lastDone ? openResult() : showStats(game));
+    d.addEventListener("visibilitychange", () => { if (d.hidden) clock.pause(); });
+    d.addEventListener("keydown", (e) => { if (e.key === "Escape" && !closeModal && clock.running && !clock.paused) clock.pause(); });
+  }
+
+  // Full-color welcome screen. Stays up until the player taps Play.
+  function splash(game) {
+    Mint.game = game;
+    const d = root.document;
+    d.querySelectorAll("[data-icon]").forEach((x) => (x.innerHTML = icon(x.dataset.icon)));
+    toolbar(game);
+    const date = pageDate();
+    const r = result(game, date);
+    const s = streak(game);
+    const line = r ? (r.solved ? "You solved this one." : "You’ve played this one.")
+      : s ? `You’re on a ${s}-day streak. Keep it going.` : LENGTHS[game] + ".";
+    openOverlay("welcome", `<a class="home" href="/">‹ All puzzles</a>
+      <div class="art">${icon(game)}</div><h1>${NAMES[game]}</h1><p class="tag">${TAGS[game]}</p>
+      <div class="cta"><button class="btn p" data-close id="splashGo">${r ? "See your result" : date === today() ? "Play" : "Play this day"}</button>
+      <button class="btn o" id="splashHow">How to play</button></div>
+      <p class="line">${line}</p>
+      <div class="meta"><b>${prettyDate(date)}</b>No. ${puzzleNumber(date)}</div>
+      <div class="free">Free to play · No account</div>`, () => {
+      if (r) { if (lastDone) openResult(); return; }
+      let seen = false;
+      try { seen = !!root.localStorage.getItem("mint:seen:" + game); } catch {}
+      if (!seen) help(game);
+    });
+    d.getElementById("splashHow").onclick = () => help(game);
+  }
+
+  // Result: an inline card under the board, and a modal the moment a puzzle is finished.
+  // stats = [[label, value], ...] for this puzzle.
+  let lastDone = null;
+  function resultHtml({ eyebrow, title, stats: rows }, compact) {
+    return `<div class="rh" style="--c:${COLORS[Mint.game]}">${icon(Mint.game)}<div class="eyebrow">${eyebrow}</div><b>${title}</b>
+      <div class="stats">${rows.map(([k, v]) => `<div><span>${v}</span>${k}</div>`).join("")}</div></div>
+      <div class="row acts"><button class="btn p share">Share your result</button>${compact ? `<button class="btn o more">See stats</button>` : ""}</div>`;
+  }
+  function openResult() {
+    const w = modal(resultHtml(lastDone) + statsHtml(Mint.game), "result");
+    w.querySelector(".share").onclick = (e) => share(lastDone.shareText, e.target);
+    tickCountdown(w);
+  }
+  function renderDone(el, opts) {
+    lastDone = opts;
+    clock.stop();
+    el.hidden = false;
+    el.innerHTML = resultHtml(opts, true);
+    el.querySelector(".share").onclick = (e) => share(opts.shareText, e.target);
+    el.querySelector(".more").onclick = openResult;
+    // Restored results stay quiet behind the splash; a puzzle just finished celebrates.
     if (!root.document.body.classList.contains("splashing")) {
-      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "center" }), 350);
+      root.document.body.classList.add("won");
+      setTimeout(openResult, 650);
     }
   }
 
@@ -354,14 +510,15 @@
       }
       await root.navigator.clipboard.writeText(text);
       const was = btn.textContent;
-      btn.textContent = "Copied!";
+      btn.textContent = "Copied to clipboard";
       setTimeout(() => (btn.textContent = was), 1600);
     } catch {}
   }
 
   root.Mint = {
     LAUNCH, rng, hash, today, addDays, prettyDate, puzzleNumber, pageDate,
-    save, result, streak, fmtTime, renderMore, share, icon, splash, renderDone, NAMES,
+    save, result, streak, stats, fmtTime, renderMore, share, icon, splash, renderDone, NAMES,
+    clock, help, showStats,
     sumPuzzle, sudokuPuzzle, sudokuCount, nonogramPuzzle, lineSolve, runs,
   };
 })(typeof window !== "undefined" ? window : globalThis);
