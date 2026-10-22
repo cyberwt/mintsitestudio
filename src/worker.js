@@ -19,8 +19,28 @@ const GAMES = {
   nonogram: "Mint Nonogram",
 };
 const SITE_PAGES = ["/", "/about", "/privacy"];
+// Public by design: IndexNow checks it against https://mintsitestudio.com/<key>.txt.
+const INDEXNOW_KEY = "c6ec84f59db39c6516ece9b760180dd2";
 
 export default {
+  // Daily cron: tell Bing (via IndexNow) about the day's new puzzle pages.
+  async scheduled(event, env, ctx) {
+    const day = lastPuzzleDay();
+    const urlList = Object.keys(GAMES).map((g) => `https://mintsitestudio.com/${g}/${day}`);
+    ctx.waitUntil(
+      fetch("https://api.indexnow.org/indexnow", {
+        method: "POST",
+        headers: { "content-type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          host: "mintsitestudio.com",
+          key: INDEXNOW_KEY,
+          keyLocation: `https://mintsitestudio.com/${INDEXNOW_KEY}.txt`,
+          urlList,
+        }),
+      }),
+    );
+  },
+
   async fetch(request, env) {
     const url = new URL(request.url);
     // `wrangler dev` acts as the apex so the puzzle site can be checked locally.

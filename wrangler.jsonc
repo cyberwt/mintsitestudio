@@ -12,6 +12,8 @@
     "not_found_handling": "404-page"
   },
   "workers_dev": false,
+  // 10:05 UTC = after midnight in every time zone from UTC+14 to UTC-10, so the new day's pages exist.
+  "triggers": { "crons": ["5 10 * * *"] },
   "routes": [
     { "pattern": "mintsitestudio.com", "custom_domain": true },
     { "pattern": "www.mintsitestudio.com", "custom_domain": true },
