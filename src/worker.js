@@ -116,7 +116,7 @@ async function dailyPage(request, env, game, date) {
     return env.ASSETS.fetch(new Request(new URL("/no-such-page", request.url), request));
   }
   const page = await env.ASSETS.fetch(new Request(new URL(`/${game}/`, request.url), request));
-  const name = `${GAMES[game]} #${puzzleNumber(date)}`;
+  const name = `${GAMES[game]} No. ${puzzleNumber(date)}`;
   const when = prettyDate(date);
   return new HTMLRewriter()
     .on("title", { element: (el) => el.setInnerContent(`${name}, ${when} | Mint Puzzles`) })
