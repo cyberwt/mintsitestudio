@@ -15,6 +15,7 @@
   "routes": [
     { "pattern": "mintsitestudio.com", "custom_domain": true },
     { "pattern": "www.mintsitestudio.com", "custom_domain": true },
-    { "pattern": "demo.mintsitestudio.com", "custom_domain": true }
+    { "pattern": "demo.mintsitestudio.com", "custom_domain": true },
+    { "pattern": "seller.mintsitestudio.com", "custom_domain": true }
   ]
 }

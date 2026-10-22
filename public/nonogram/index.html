@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint Nonogram: free daily picture logic puzzle | Mint Puzzles</title>
+<meta name="description" content="A free 10×10 nonogram (picross, griddler) every day. Use the number clues to fill the grid. Solvable by logic alone, no signup.">
+<link rel="canonical" href="https://mintsitestudio.com/nonogram/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .board{display:grid;grid-template-columns:auto repeat(10,minmax(0,1fr));max-width:440px;margin:0 auto;user-select:none;touch-action:none;-webkit-user-select:none}
+  .cc{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;font-size:13px;line-height:1.2;padding-bottom:4px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .rc{display:flex;justify-content:flex-end;align-items:center;gap:5px;font-size:13px;padding-right:6px;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cc.ok,.rc.ok{color:var(--muted);opacity:.45}
+  .x{aspect-ratio:1;background:var(--cell);border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:grid;place-items:center;font-size:15px;color:var(--muted);cursor:pointer}
+  .x.f{background:var(--fill)}
+  .x.c5{border-right:2px solid var(--muted)}
+  .x.r5{border-bottom:2px solid var(--muted)}
+  .x.t{border-top:2px solid var(--ink)}
+  .x.l{border-left:2px solid var(--ink)}
+  .x.e{border-right:2px solid var(--ink)}
+  .x.b{border-bottom:2px solid var(--ink)}
+  .mode{justify-content:center;margin-top:14px}
+  .mode .btn.on{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="logo" href="/">🌿 Mint Puzzles</a>
+    <nav class="nav"><a href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a class="on" href="/nonogram/">Nonogram</a></nav>
+  </div>
+  <h1 id="h">Mint Nonogram</h1>
+  <p class="sub" id="d"></p>
+
+  <div class="card">
+    <div class="bar"><span id="timer">0:00</span><button class="btn" id="clear" style="padding:6px 12px">Clear</button></div>
+    <div class="board" id="board"></div>
+    <div class="row mode">
+      <button class="btn on" id="mFill">■ Fill</button>
+      <button class="btn" id="mX">✕ Mark empty</button>
+    </div>
+    <div class="msg" id="msg"></div>
+  </div>
+
+  <div class="done" id="done" hidden></div>
+
+  <h2>How to play</h2>
+  <ul class="how">
+    <li>The numbers next to each row and above each column give the lengths of the filled runs in that line, in order.</li>
+    <li>There is at least one empty square between two runs. "3 1" means three filled, a gap, then one filled.</li>
+    <li>Tap or drag to fill squares. Switch to ✕ to mark squares you know are empty; marks are only notes.</li>
+    <li>A clue fades when its line matches. Every puzzle can be solved by logic alone, one line at a time.</li>
+  </ul>
+
+  <div id="more"></div>
+  <footer><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></footer>
+</div>
+<script src="/assets/mint.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const date = Mint.pageDate();
+  const num = Mint.puzzleNumber(date);
+  const { n, rowClues, colClues, solution } = Mint.nonogramPuzzle(date);
+  $("h").textContent = `Mint Nonogram #${num}`;
+  $("d").textContent = `${Mint.prettyDate(date)}${date === Mint.today() ? " · today's puzzle" : ""}`;
+
+  const saved = Mint.result("nonogram", date);
+  // 0 empty, 1 filled, 2 marked empty
+  const cells = saved && saved.solved ? solution.slice() : new Array(n * n).fill(0);
+  let done = !!(saved && saved.solved);
+  let mode = 1, paint = null, secs = 0, timer = null;
+
+  // Build the board once; updates only toggle classes.
+  const board = $("board");
+  let html = "<div></div>";
+  for (let c = 0; c < n; c++) html += `<div class="cc" id="cc${c}">${colClues[c].map((v) => `<span>${v}</span>`).join("")}</div>`;
+  for (let r = 0; r < n; r++) {
+    html += `<div class="rc" id="rc${r}">${rowClues[r].map((v) => `<span>${v}</span>`).join("")}</div>`;
+    for (let c = 0; c < n; c++) {
+      const cls = ["x"];
+      if (c === 4) cls.push("c5");
+      if (r === 4) cls.push("r5");
+      if (r === 0) cls.push("t");
+      if (c === 0) cls.push("l");
+      if (c === n - 1) cls.push("e");
+      if (r === n - 1) cls.push("b");
+      html += `<div class="${cls.join(" ")}" data-i="${r * n + c}"></div>`;
+    }
+  }
+  board.innerHTML = html;
+  const els = [...board.querySelectorAll("[data-i]")];
+
+  const same = (a, b) => a.length === b.length && a.every((v, i) => v === b[i]);
+  function update() {
+    els.forEach((el, i) => {
+      el.classList.toggle("f", cells[i] === 1);
+      el.textContent = cells[i] === 2 ? "✕" : "";
+    });
+    for (let i = 0; i < n; i++) {
+      const row = cells.slice(i * n, i * n + n).map((v) => +(v === 1));
+      const col = [...Array(n).keys()].map((j) => +(cells[j * n + i] === 1));
+      $("rc" + i).classList.toggle("ok", same(Mint.runs(row), rowClues[i]));
+      $("cc" + i).classList.toggle("ok", same(Mint.runs(col), colClues[i]));
+    }
+  }
+
+  function set(i) {
+    if (done || paint === null || cells[i] === paint) return;
+    // Dragging never overwrites the other kind of mark.
+    if (paint !== 0 && cells[i] !== 0) return;
+    cells[i] = paint;
+    if (!timer) timer = setInterval(() => { secs++; $("timer").textContent = Mint.fmtTime(secs); }, 1000);
+    update();
+  }
+
+  board.addEventListener("pointerdown", (e) => {
+    const el = e.target.closest("[data-i]");
+    if (!el || done) return;
+    e.preventDefault();
+    const i = +el.dataset.i;
+    paint = cells[i] === mode ? 0 : mode;
+    if (cells[i] !== 0 && cells[i] !== mode) paint = 0;
+    set(i);
+  });
+  board.addEventListener("pointermove", (e) => {
+    if (paint === null) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const cell = el && el.closest && el.closest("[data-i]");
+    if (cell) set(+cell.dataset.i);
+  });
+  const end = () => {
+    if (paint === null) return;
+    paint = null;
+    if (cells.every((v, i) => (v === 1) === (solution[i] === 1))) win();
+  };
+  window.addEventListener("pointerup", end);
+  window.addEventListener("pointercancel", end);
+
+  $("mFill").onclick = () => { mode = 1; $("mFill").classList.add("on"); $("mX").classList.remove("on"); };
+  $("mX").onclick = () => { mode = 2; $("mX").classList.add("on"); $("mFill").classList.remove("on"); };
+  $("clear").onclick = () => { if (!done) { cells.fill(0); update(); } };
+
+  function win() {
+    done = true;
+    clearInterval(timer);
+    for (let i = 0; i < cells.length; i++) if (cells[i] === 2) cells[i] = 0;
+    update();
+    const r = { solved: true, time: secs };
+    Mint.save("nonogram", date, r);
+    showDone(r);
+  }
+
+  function showDone(r) {
+    const streak = Mint.streak("nonogram");
+    $("timer").textContent = Mint.fmtTime(r.time);
+    $("clear").disabled = true;
+    $("done").hidden = false;
+    $("done").innerHTML = `<b>Solved in ${Mint.fmtTime(r.time)} 🟩</b>
+      <p class="sub" style="margin:6px 0 12px">${streak > 1 ? `${streak}-day streak. ` : ""}A new puzzle arrives at midnight.</p>
+      <button class="btn p" id="share">Share result</button>`;
+    $("share").onclick = (e) => Mint.share(`Mint Nonogram #${num} solved in ${Mint.fmtTime(r.time)} 🟩\nhttps://mintsitestudio.com/nonogram/`, e.target);
+  }
+
+  if (done) showDone(saved);
+  update();
+  Mint.renderMore($("more"), "nonogram");
+})();
+</script>
+</body>
+</html>

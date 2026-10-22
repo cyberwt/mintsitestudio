@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint Puzzles: free daily number, sudoku and picture puzzles</title>
+<meta name="description" content="Three new free puzzles every day: Mint Sum, Mini Sudoku and Mint Nonogram. No signup, no download, works on phones. Play past days in the archive.">
+<link rel="canonical" href="https://mintsitestudio.com/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="stylesheet" href="/assets/mint.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="logo" href="/">🌿 Mint Puzzles</a>
+    <nav class="nav"><a href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
+  </div>
+
+  <h1>Three fresh puzzles, every day</h1>
+  <p class="sub" id="today"></p>
+
+  <div class="games">
+    <a class="card game" href="/sum/"><b>Mint Sum</b><span>Combine six numbers with + − × ÷ to hit the target. Three rounds.</span><div class="st" data-g="sum"></div></a>
+    <a class="card game" href="/sudoku/"><b>Mini Sudoku</b><span>A 6×6 sudoku you can finish over coffee. One solution, no guessing.</span><div class="st" data-g="sudoku"></div></a>
+    <a class="card game" href="/nonogram/"><b>Mint Nonogram</b><span>Use the number clues to fill in a 10×10 grid. Pure logic.</span><div class="st" data-g="nonogram"></div></a>
+  </div>
+
+  <h2>How it works</h2>
+  <ul class="how">
+    <li>Everyone gets the same puzzles each day, and new ones appear at midnight your time.</li>
+    <li>No account or download. Your streaks are saved in this browser only.</li>
+    <li>Missed a day? Every past puzzle stays free to play from the archive under each game.</li>
+  </ul>
+
+  <footer><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></footer>
+</div>
+<script src="/assets/mint.js"></script>
+<script>
+  const t = Mint.today();
+  document.getElementById("today").textContent = `${Mint.prettyDate(t)} · Puzzle #${Mint.puzzleNumber(t)}`;
+  document.querySelectorAll("[data-g]").forEach((el) => {
+    const g = el.dataset.g, r = Mint.result(g, t), s = Mint.streak(g);
+    el.textContent = r && r.solved ? `✓ Solved today${s > 1 ? ` · ${s}-day streak` : ""}` : r ? "Played today" : "Play today's puzzle →";
+  });
+</script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 // Mint Site Studio Worker.
-//   mintsitestudio.com       /  -> pitch page (public/creators.html); demo paths redirect to demo.
+//   mintsitestudio.com          -> Mint Puzzles (daily games, public/index.html + /sum /sudoku /nonogram)
+//                                  /<game>/YYYY-MM-DD serves that game's page for a past day; /creators -> seller.
 //   www.mintsitestudio.com      -> 301 to the apex
+//   seller.mintsitestudio.com /  -> creator pitch page (public/creators.html); other paths -> apex
 //   demo.mintsitestudio.com  /  -> demo deal feed, /studio card tool, /creators pitch, /api/draft
 
 const DEMO_PATHS = {
@@ -9,22 +11,46 @@ const DEMO_PATHS = {
   "/deals.json": "/demo/deals.json",
 };
 
+// Keep in sync with LAUNCH in public/assets/mint.js.
+const LAUNCH = "2026-10-21";
+const GAMES = {
+  sum: "Mint Sum",
+  sudoku: "Mini Sudoku",
+  nonogram: "Mint Nonogram",
+};
+const SITE_PAGES = ["/", "/about", "/privacy"];
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    // `wrangler dev` acts as the apex so the puzzle site can be checked locally.
+    if (url.hostname === "localhost") url.hostname = "mintsitestudio.com";
 
     if (url.hostname === "www.mintsitestudio.com") {
       url.hostname = "mintsitestudio.com";
       return Response.redirect(url.toString(), 301);
     }
 
-    if (url.hostname === "mintsitestudio.com") {
+    if (url.hostname === "seller.mintsitestudio.com") {
       if (url.pathname === "/" || url.pathname === "/creators") {
         return env.ASSETS.fetch(new Request(new URL("/creators", url.origin), request));
       }
       if (url.pathname in DEMO_PATHS || url.pathname.startsWith("/demo")) {
         return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
       }
+      if (url.pathname === "/robots.txt" || url.pathname === "/favicon.ico") return env.ASSETS.fetch(request);
+      return Response.redirect(`https://mintsitestudio.com${url.pathname}${url.search}`, 301);
+    }
+
+    if (url.hostname === "mintsitestudio.com") {
+      if (url.pathname === "/creators") return Response.redirect("https://seller.mintsitestudio.com/", 301);
+      if (url.pathname in DEMO_PATHS && url.pathname !== "/" || url.pathname.startsWith("/demo")) {
+        return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
+      }
+      if (url.pathname === "/sitemap.xml") return sitemap();
+      const m = url.pathname.match(/^\/(sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
+      if (m) return dailyPage(request, env, m[1], m[2]);
+      return env.ASSETS.fetch(request);
     }
 
     if (url.pathname === "/api/draft") {
@@ -40,6 +66,57 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+// ---- Mint Puzzles ----------------------------------------------------------
+// Puzzles are generated in the browser from the date, so a past day is the game
+// page with its own title and canonical URL. Days before launch or in the future 404.
+
+function addDays(iso, n) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d + n)).toISOString().slice(0, 10);
+}
+
+function lastPuzzleDay() {
+  // UTC+14 is the earliest time zone, so "today" somewhere can be tomorrow in UTC.
+  return addDays(new Date().toISOString().slice(0, 10), 1);
+}
+
+function prettyDate(iso) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { timeZone: "UTC", month: "long", day: "numeric", year: "numeric" });
+}
+
+function puzzleNumber(iso) {
+  const [a, b] = [LAUNCH, iso].map((s) => Date.UTC(...s.split("-").map((x, i) => Number(x) - (i === 1 ? 1 : 0))));
+  return Math.round((b - a) / 86400000) + 1;
+}
+
+async function dailyPage(request, env, game, date) {
+  if (date < LAUNCH || date > lastPuzzleDay() || addDays(date, 0) !== date) {
+    return env.ASSETS.fetch(new Request(new URL("/no-such-page", request.url), request));
+  }
+  const page = await env.ASSETS.fetch(new Request(new URL(`/${game}/`, request.url), request));
+  const name = `${GAMES[game]} #${puzzleNumber(date)}`;
+  const when = prettyDate(date);
+  return new HTMLRewriter()
+    .on("title", { element: (el) => el.setInnerContent(`${name}, ${when} | Mint Puzzles`) })
+    .on('meta[name="description"]', {
+      element: (el) => el.setAttribute("content", `Play ${name}, the free ${GAMES[game]} puzzle for ${when}. No signup, works on phones.`),
+    })
+    .on('link[rel="canonical"]', { element: (el) => el.setAttribute("href", `https://mintsitestudio.com/${game}/${date}`) })
+    .transform(page);
+}
+
+function sitemap() {
+  const urls = SITE_PAGES.map((p) => `https://mintsitestudio.com${p}`);
+  for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/`);
+  const end = new Date().toISOString().slice(0, 10);
+  for (let d = LAUNCH; d <= end; d = addDays(d, 1)) {
+    for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/${d}`);
+  }
+  const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`;
+  return new Response(body, { headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" } });
+}
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {

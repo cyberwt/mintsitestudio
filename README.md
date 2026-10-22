@@ -1,6 +1,19 @@
-# Mint Site Studio: creator deal-feed demo
+# Mint Site Studio
 
-Live: https://mintsitestudio.com/ (pitch; www → apex) · https://demo.mintsitestudio.com/ (feed) · /studio (card tool) · /creators
+Live:
+- https://mintsitestudio.com/ — **Mint Puzzles**, three free daily puzzles (Sum, Mini Sudoku, Nonogram); www → apex
+- https://seller.mintsitestudio.com/ — creator deal-feed pitch (moved from the apex 2026-10-21; apex /creators 301s here)
+- https://demo.mintsitestudio.com/ — demo deal feed · /studio (card tool) · /creators
+
+## Mint Puzzles
+
+- Puzzles are generated in the browser from the date (`public/assets/mint.js`, seeded by `<game>:<YYYY-MM-DD>`), so there is no puzzle data to store. Each generator is solver-checked: Sum targets are built from the numbers, Sudoku keeps exactly one solution, Nonograms must be line-solvable.
+- `/<game>/YYYY-MM-DD` is the same page with its own title + canonical (HTMLRewriter in the Worker); days before `LAUNCH` or in the future 404. `/sitemap.xml` lists every day since launch.
+- Progress and streaks live in the player's localStorage only. No analytics or ads yet.
+- Changing a generator changes every past puzzle. Version it (e.g. a new seed prefix from a cutover date) instead of editing in place.
+- Local preview: `npx wrangler@4 dev --port 8791` (localhost acts as the apex).
+
+## Deal-feed demo
 
 - One Cloudflare Worker (`src/worker.js`) + static assets (`public/`). Free plan, no paid APIs.
 - `/api/draft` fetches a product page (og:title / JSON-LD), rejects bot-wall pages, and builds a Chinese deal card + WeChat text.

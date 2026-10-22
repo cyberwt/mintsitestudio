@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint Sum: free daily number puzzle | Mint Puzzles</title>
+<meta name="description" content="Combine six numbers with plus, minus, times and divide to hit the target. A new free number puzzle every day, three rounds, no signup.">
+<link rel="canonical" href="https://mintsitestudio.com/sum/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .levels{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+  .lv{font-size:14.5px;padding:8px 4px;text-align:center}
+  .lv.on{border-color:var(--mint);background:var(--mint-soft)}
+  .target{text-align:center;margin:6px 0 14px}
+  .target small{display:block;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+  .target b{font-size:52px;line-height:1.1;font-variant-numeric:tabular-nums}
+  .tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:360px;margin:0 auto}
+  .tile{aspect-ratio:1.4;font-size:28px;font-weight:700;border-radius:14px;font-variant-numeric:tabular-nums}
+  .tile.sel{background:var(--mint);border-color:var(--mint);color:var(--mint-ink)}
+  .tile.gone{visibility:hidden}
+  .tile.hit{background:var(--mint);color:var(--mint-ink);border-color:var(--mint)}
+  .ops{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:360px;margin:14px auto 0}
+  .op{font-size:26px;padding:8px 0}
+  .op.sel{background:var(--mint-soft);border-color:var(--mint)}
+  .ctl{justify-content:center;margin-top:14px}
+  .sol{font-variant-numeric:tabular-nums;margin:8px 0 0;padding-left:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="logo" href="/">🌿 Mint Puzzles</a>
+    <nav class="nav"><a class="on" href="/sum/">Sum</a><a href="/sudoku/">Sudoku</a><a href="/nonogram/">Nonogram</a></nav>
+  </div>
+  <h1 id="h">Mint Sum</h1>
+  <p class="sub" id="d"></p>
+
+  <div class="card">
+    <div class="levels" id="levels"></div>
+    <div class="target"><small>Target</small><b id="target"></b></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="ops" id="ops"></div>
+    <div class="row ctl">
+      <button class="btn" id="undo">Undo</button>
+      <button class="btn" id="reset">Reset</button>
+      <button class="btn" id="reveal">Show a solution</button>
+    </div>
+    <div class="msg" id="msg"></div>
+    <ol class="sol" id="sol" hidden></ol>
+  </div>
+
+  <div class="done" id="done" hidden></div>
+
+  <h2>How to play</h2>
+  <ul class="how">
+    <li>Tap a number, tap an operation, then tap a second number. The two numbers are replaced by the result.</li>
+    <li>Reach the target exactly to clear the round. You don't have to use every number.</li>
+    <li>Only whole numbers are allowed: subtraction can't go below zero and division must come out even.</li>
+    <li>Each day has three rounds: Easy, Medium and Hard. Every target has at least one exact solution.</li>
+  </ul>
+
+  <div id="more"></div>
+  <footer><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></footer>
+</div>
+<script src="/assets/mint.js"></script>
+<script>
+(() => {
+  const date = Mint.pageDate();
+  const n = Mint.puzzleNumber(date);
+  const rounds = Mint.sumPuzzle(date);
+  document.getElementById("h").textContent = `Mint Sum #${n}`;
+  document.getElementById("d").textContent = `${Mint.prettyDate(date)}${date === Mint.today() ? " · today's puzzle" : ""}`;
+
+  const $ = (id) => document.getElementById(id);
+  const saved = Mint.result("sum", date);
+  // Per round: "play" | "solved" | "revealed"
+  const state = rounds.map((p, i) => ({
+    status: saved ? saved.levels[i] : "play",
+    tiles: p.nums.map((v) => ({ v, gone: false })),
+    hist: [],
+  }));
+  let cur = state.findIndex((s) => s.status === "play");
+  if (cur < 0) cur = 0;
+  let sel = -1, op = null;
+  const started = Date.now();
+
+  function say(text, bad) {
+    $("msg").textContent = text;
+    $("msg").className = "msg" + (bad ? " bad" : "");
+  }
+
+  function render() {
+    const s = state[cur], p = rounds[cur];
+    $("levels").innerHTML = rounds.map((r, i) => {
+      const st = state[i].status;
+      const mark = st === "solved" ? " ✓" : st === "revealed" ? " ·" : "";
+      return `<button class="btn lv${i === cur ? " on" : ""}" data-i="${i}">${r.level}${mark}</button>`;
+    }).join("");
+    $("target").textContent = p.target;
+    $("tiles").innerHTML = s.tiles.map((t, i) =>
+      `<button class="btn tile${t.gone ? " gone" : ""}${i === sel ? " sel" : ""}${s.status === "solved" && t.v === p.target && !t.gone ? " hit" : ""}" data-t="${i}" ${s.status !== "play" ? "disabled" : ""}>${t.v}</button>`).join("");
+    $("ops").innerHTML = ["+", "−", "×", "÷"].map((o) =>
+      `<button class="btn op${o === op ? " sel" : ""}" data-o="${o}" ${s.status !== "play" ? "disabled" : ""}>${o}</button>`).join("");
+    $("undo").disabled = s.status !== "play" || !s.hist.length;
+    $("reset").disabled = s.status !== "play" || !s.hist.length;
+    $("reveal").disabled = s.status !== "play";
+    const sol = $("sol");
+    sol.hidden = s.status !== "revealed";
+    sol.innerHTML = p.solution.map((x) => `<li>${x}</li>`).join("");
+    if (s.status === "solved") say("Solved! " + (state.some((x) => x.status === "play") ? "On to the next round." : ""));
+    else if (s.status === "revealed") say("One way to get there:");
+  }
+
+  $("levels").onclick = (e) => {
+    const b = e.target.closest("[data-i]");
+    if (!b) return;
+    cur = +b.dataset.i; sel = -1; op = null; say("");
+    render();
+  };
+
+  $("tiles").onclick = (e) => {
+    const b = e.target.closest("[data-t]");
+    if (!b) return;
+    const s = state[cur], j = +b.dataset.t;
+    if (sel === -1 || j === sel) { sel = j === sel ? -1 : j; op = null; say(""); return render(); }
+    if (!op) { sel = j; return render(); }
+    const a = s.tiles[sel].v, c = s.tiles[j].v;
+    let v;
+    if (op === "+") v = a + c;
+    else if (op === "×") v = a * c;
+    else if (op === "−") v = a - c;
+    else v = c !== 0 && a % c === 0 ? a / c : NaN;
+    if (!(v > 0) || !Number.isInteger(v)) {
+      say(op === "−" ? "That would go below zero. Try the bigger number first." : "That doesn't divide evenly.", true);
+      b.classList.add("shake"); setTimeout(() => b.classList.remove("shake"), 450);
+      return;
+    }
+    s.hist.push(s.tiles.map((t) => ({ ...t })));
+    s.tiles[sel].gone = true;
+    s.tiles[j].v = v;
+    say(`${a} ${op} ${c} = ${v}`);
+    sel = j; op = null;
+    if (v === rounds[cur].target) finishRound("solved");
+    render();
+  };
+
+  $("ops").onclick = (e) => {
+    const b = e.target.closest("[data-o]");
+    if (!b || sel === -1) { if (b) say("Tap a number first.", true); return; }
+    op = op === b.dataset.o ? null : b.dataset.o;
+    render();
+  };
+
+  $("undo").onclick = () => {
+    const s = state[cur];
+    if (!s.hist.length) return;
+    s.tiles = s.hist.pop(); sel = -1; op = null; say("");
+    render();
+  };
+  $("reset").onclick = () => {
+    const s = state[cur];
+    if (!s.hist.length) return;
+    s.tiles = s.hist[0]; s.hist = []; sel = -1; op = null; say("");
+    render();
+  };
+  $("reveal").onclick = () => finishRound("revealed") || render();
+
+  function finishRound(status) {
+    state[cur].status = status;
+    sel = -1; op = null;
+    if (state.every((s) => s.status !== "play")) {
+      const result = {
+        solved: state.every((s) => s.status === "solved"),
+        levels: state.map((s) => s.status),
+        time: Math.round((Date.now() - started) / 1000),
+      };
+      Mint.save("sum", date, result);
+      showDone(result);
+    } else if (status === "solved") {
+      const next = state.findIndex((s) => s.status === "play");
+      setTimeout(() => { cur = next; say(""); render(); }, 900);
+    }
+  }
+
+  function showDone(r) {
+    const squares = r.levels.map((l) => (l === "solved" ? "🟩" : "🟥")).join("");
+    const streak = Mint.streak("sum");
+    const head = r.solved ? "All three rounds solved" : `${r.levels.filter((l) => l === "solved").length} of 3 rounds solved`;
+    $("done").hidden = false;
+    $("done").innerHTML = `<b>${head} ${squares}</b>
+      <p class="sub" style="margin:6px 0 12px">${streak > 1 ? `${streak}-day streak. ` : ""}A new puzzle arrives at midnight.</p>
+      <button class="btn p" id="share">Share result</button>`;
+    $("share").onclick = (e) => Mint.share(`Mint Sum #${n} ${squares}\nhttps://mintsitestudio.com/sum/`, e.target);
+  }
+
+  if (saved) showDone(saved);
+  render();
+  Mint.renderMore($("more"), "sum");
+})();
+</script>
+</body>
+</html>
