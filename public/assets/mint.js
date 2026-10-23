@@ -272,6 +272,93 @@
     throw new Error("no line-solvable nonogram for " + date);
   }
 
+  // ---- Word games: Mint Word, Mint Hive, Mint Box -----------------------------
+  // Built from the frozen list in /assets/words-v1.js (root.MintWords). Seeds carry
+  // "v1" so a future words-v2.js can start from a cutover date without touching old days.
+
+  let W = null;
+  function words() {
+    if (W) return W;
+    if (!root.MintWords) throw new Error("load /assets/words-v1.js first");
+    const { common, mid, extra } = root.MintWords;
+    W = { common: common.split(" "), mid: mid.split(" ") };
+    W.all = new Set(W.common.concat(W.mid, extra.split(" ")));
+    return W;
+  }
+  const isWord = (w) => words().all.has(w);
+
+  // One five-letter answer a day, walking a fixed shuffle of everyday words (no
+  // plain plurals or -ed forms), so no answer repeats until the list runs out.
+  function wordPuzzle(date) {
+    const w = words();
+    if (!w.answers) w.answers = shuffle(rng(hash("word:v1")), w.common.filter((x) => x.length === 5 && !/[^s]s$|ed$/.test(x)));
+    return { answer: w.answers[(puzzleNumber(date) - 1) % w.answers.length] };
+  }
+
+  // Seven letters from an everyday word with seven different letters (no S), one in
+  // the middle that every word must use. Kept only if it makes 20 to 55 answers.
+  function hiveScore(word) {
+    return (word.length === 4 ? 1 : word.length) + (new Set(word).size === 7 ? 7 : 0);
+  }
+  function hivePuzzle(date) {
+    const w = words();
+    if (!w.pangrams) {
+      w.pangrams = w.common.filter((x) => !x.includes("s") && new Set(x).size === 7);
+      w.hivePool = w.common.concat(w.mid).filter((x) => x.length >= 4 && !x.includes("s") && new Set(x).size <= 7);
+    }
+    const r = rng(hash("hive:v1:" + date));
+    for (let tries = 0; tries < 400; tries++) {
+      const letters = [...new Set(pick(r, w.pangrams))];
+      const center = pick(r, letters);
+      const set = new Set(letters);
+      const answers = w.hivePool.filter((x) => x.includes(center) && [...x].every((c) => set.has(c)));
+      if (answers.length < 20 || answers.length > 55) continue;
+      return {
+        center,
+        outer: shuffle(r, letters.filter((c) => c !== center)),
+        answers: answers.sort(),
+        max: answers.reduce((s, x) => s + hiveScore(x), 0),
+      };
+    }
+    throw new Error("no hive for " + date);
+  }
+
+  // Twelve letters, three per side of a square. Built from two everyday words that
+  // chain (the first ends where the second starts) and use all twelve letters, so
+  // there is always a two-word answer. Consecutive letters of a word sit on
+  // different sides.
+  function boxPuzzle(date) {
+    const w = words();
+    if (!w.boxSeeds) {
+      w.boxSeeds = w.common.filter((x) => x.length >= 5 && x.length <= 9 && !/(.)\1/.test(x));
+      w.boxByFirst = {};
+      for (const x of w.boxSeeds) (w.boxByFirst[x[0]] = w.boxByFirst[x[0]] || []).push(x);
+    }
+    const r = rng(hash("box:v1:" + date));
+    for (let tries = 0; tries < 5000; tries++) {
+      const a = pick(r, w.boxSeeds);
+      const b = pick(r, w.boxByFirst[a[a.length - 1]] || [a]);
+      const letters = [...new Set(a + b)];
+      if (a === b || letters.length !== 12) continue;
+      const near = new Set();
+      for (const x of [a, b]) for (let i = 1; i < x.length; i++) near.add(x[i - 1] + x[i]).add(x[i] + x[i - 1]);
+      const sides = [[], [], [], []];
+      const place = (k) => {
+        if (k === letters.length) return true;
+        for (const s of sides) {
+          if (s.length === 3 || s.some((c) => near.has(c + letters[k]))) continue;
+          s.push(letters[k]);
+          if (place(k + 1)) return true;
+          s.pop();
+        }
+        return false;
+      };
+      shuffle(r, letters);
+      if (place(0)) return { sides: shuffle(r, sides.map((s) => shuffle(r, s))), solution: [a, b] };
+    }
+    throw new Error("no box for " + date);
+  }
+
   // ---- Page helpers ----------------------------------------------------------
 
   // Links to the other games and to past days, shown under every game.
@@ -294,14 +381,17 @@
 
   // ---- Look: icons, toolbar, splash, modals, result card ------------------------
 
-  const NAMES = { sum: "Mint Sum", sudoku: "Mini Sudoku", nonogram: "Mint Nonogram" };
+  const NAMES = { sum: "Mint Sum", sudoku: "Mini Sudoku", nonogram: "Mint Nonogram", word: "Mint Word", hive: "Mint Hive", box: "Mint Box" };
   const TAGS = {
     sum: "Make the numbers hit the target.",
     sudoku: "Fill the grid with 1 to 6. Six minutes of calm.",
     nonogram: "Use the clues to reveal the picture.",
+    word: "Find the hidden five-letter word in six tries.",
+    hive: "Make words from seven letters. Always use the middle one.",
+    box: "Link letters around the box. Use all twelve.",
   };
-  const LENGTHS = { sum: "About 5 minutes", sudoku: "About 6 minutes", nonogram: "About 10 minutes" };
-  const COLORS = { sum: "#8fd8b8", sudoku: "#ffcb57", nonogram: "#bcaeff" };
+  const LENGTHS = { sum: "About 5 minutes", sudoku: "About 6 minutes", nonogram: "About 10 minutes", word: "About 3 minutes", hive: "Play as long as you like", box: "About 8 minutes" };
+  const COLORS = { sum: "#8fd8b8", sudoku: "#ffcb57", nonogram: "#bcaeff", word: "#8cc8ff", hive: "#ffa47e", box: "#ff9ec4" };
   const INK = "#121212";
   function icon(game) {
     const frame = `<rect x="2" y="2" width="44" height="44" rx="10" fill="${COLORS[game]}" stroke="${INK}" stroke-width="3"/>`;
@@ -310,6 +400,9 @@
       sudoku: `<path d="M24 3.5v41M3.5 17.3h41M3.5 30.7h41" stroke="${INK}" stroke-width="2.5"/><rect x="24" y="17.3" width="20.5" height="13.4" fill="${INK}"/>`,
       nonogram: [[0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [1, 3], [2, 1], [2, 2], [3, 0], [3, 3]]
         .map(([r, c]) => `<rect x="${10 + c * 7.5}" y="${10 + r * 7.5}" width="6.5" height="6.5" rx="1" fill="${INK}"/>`).join(""),
+      word: [0, 1, 2].map((i) => `<rect x="${9 + i * 10.5}" y="18" width="9" height="12" rx="1.5" fill="${i === 1 ? INK : "#fff"}" stroke="${INK}" stroke-width="2"/>`).join(""),
+      hive: `<path d="M24 12.5l9.5 5.5v11L24 34.5 14.5 29V18z" fill="${INK}"/><path d="M24 17.5l5 3v6l-5 3-5-3v-6z" fill="#fff"/>`,
+      box: `<rect x="13" y="13" width="22" height="22" fill="#fff" stroke="${INK}" stroke-width="3"/><path d="M13 20L35 28M24 13L18 35" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/>`,
     }[game];
     return `<svg class="icon" viewBox="0 0 48 48" aria-hidden="true">${frame}${art}</svg>`;
   }
@@ -520,5 +613,6 @@
     save, result, streak, stats, fmtTime, renderMore, share, icon, splash, renderDone, NAMES,
     clock, help, showStats,
     sumPuzzle, sudokuPuzzle, sudokuCount, nonogramPuzzle, lineSolve, runs,
+    words, isWord, wordPuzzle, hivePuzzle, hiveScore, boxPuzzle, modal,
   };
 })(typeof window !== "undefined" ? window : globalThis);

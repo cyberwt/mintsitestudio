@@ -1,5 +1,5 @@
 // Mint Site Studio Worker.
-//   mintsitestudio.com          -> Mint Puzzles (daily games, public/index.html + /sum /sudoku /nonogram)
+//   mintsitestudio.com          -> Mint Puzzles (daily games, public/index.html + /word /hive /box /sum /sudoku /nonogram)
 //                                  /<game>/YYYY-MM-DD serves that game's page for a past day; /creators -> seller.
 //   www.mintsitestudio.com      -> 301 to the apex
 //   seller.mintsitestudio.com /  -> creator pitch page (public/creators.html); other paths -> apex
@@ -14,6 +14,9 @@ const DEMO_PATHS = {
 // Keep in sync with LAUNCH in public/assets/mint.js.
 const LAUNCH = "2026-10-21";
 const GAMES = {
+  word: "Mint Word",
+  hive: "Mint Hive",
+  box: "Mint Box",
   sum: "Mint Sum",
   sudoku: "Mini Sudoku",
   nonogram: "Mint Nonogram",
@@ -68,7 +71,7 @@ export default {
         return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
       }
       if (url.pathname === "/sitemap.xml") return sitemap();
-      const m = url.pathname.match(/^\/(sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
+      const m = url.pathname.match(/^\/(word|hive|box|sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
       if (m) return dailyPage(request, env, m[1], m[2]);
       return env.ASSETS.fetch(request);
     }

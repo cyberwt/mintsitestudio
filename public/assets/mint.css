@@ -3,7 +3,7 @@
   --bg:#fff;--card:#fff;--ink:#121212;--muted:#5f6368;--line:#dcdcdc;--soft:#f4f4f2;
   --key:#e6e6e3;--key-ink:#121212;--pill:#121212;--pill-ink:#fff;
   --bad:#c8352d;--cell:#fff;--fill:#121212;
-  --sum:#8fd8b8;--sudoku:#ffcb57;--nonogram:#bcaeff;
+  --sum:#8fd8b8;--sudoku:#ffcb57;--nonogram:#bcaeff;--word:#8cc8ff;--hive:#ffa47e;--box:#ff9ec4;
   --game:var(--sum);--game-soft:#e4f6ee;
   --slab:"Zilla Slab",Rockwell,"Roboto Slab",Georgia,serif;
   --sans:"Libre Franklin","Franklin Gothic Medium","Helvetica Neue",Arial,sans-serif;
@@ -16,10 +16,16 @@
 body.g-sum{--game:var(--sum)}
 body.g-sudoku{--game:var(--sudoku);--game-soft:#fff3d6}
 body.g-nonogram{--game:var(--nonogram);--game-soft:#eeeaff}
+body.g-word{--game:var(--word);--game-soft:#e3f1ff}
+body.g-hive{--game:var(--hive);--game-soft:#ffeadf}
+body.g-box{--game:var(--box);--game-soft:#ffe6f0}
 @media (prefers-color-scheme:dark){
   body.g-sum{--game-soft:#1f3a2f}
   body.g-sudoku{--game-soft:#3d3218}
   body.g-nonogram{--game-soft:#2c2745}
+  body.g-word{--game-soft:#1c3247}
+  body.g-hive{--game-soft:#45291c}
+  body.g-box{--game-soft:#45202f}
 }
 
 *{box-sizing:border-box}
@@ -35,7 +41,9 @@ a{color:inherit}
 .logo{font:700 22px/1 var(--slab);color:var(--ink);text-decoration:none;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
 .logo i{width:22px;height:22px;border-radius:6px;background:var(--sum);display:inline-block;position:relative}
 .logo i::after{content:"";position:absolute;inset:6px;border-radius:2px;background:var(--ink)}
-.nav{display:flex;gap:2px}
+.nav{display:flex;gap:2px;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none}
 .nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600;padding:6px 10px;border-radius:999px;display:inline-flex;align-items:center;gap:6px}
 .nav em{width:9px;height:9px;border-radius:3px;background:var(--c);box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;flex:none}
 .nav a.on,.nav a:hover{color:var(--ink);background:var(--soft)}

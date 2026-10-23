@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint Hive: free daily seven-letter word puzzle | Mint Puzzles</title>
+<meta name="description" content="Make as many words as you can from seven letters, always using the center one. A free daily word puzzle with ranks, a pangram to find and the whole archive free.">
+<link rel="canonical" href="https://mintsitestudio.com/hive/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .rank{display:flex;align-items:center;gap:12px;max-width:420px;margin:0 auto 6px}
+  .rank b{font:700 17px/1 var(--slab);min-width:92px}
+  .track{flex:1;position:relative;height:22px;display:flex;align-items:center;justify-content:space-between}
+  .track::before{content:"";position:absolute;left:0;right:0;height:2px;background:var(--line)}
+  .track i{position:relative;width:9px;height:9px;border-radius:50%;background:var(--line)}
+  .track i.on{background:var(--game)}
+  .track i.here{width:28px;height:28px;display:grid;place-items:center;font:800 12px/1 var(--sans);font-style:normal;background:var(--game);color:#121212}
+  .found{max-width:420px;margin:10px auto 0;border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14.5px}
+  .found summary{cursor:pointer;font-weight:700}
+  .found ul{columns:2;list-style:none;padding:0;margin:8px 0 0;text-transform:capitalize}
+  .found li{padding:3px 0;border-bottom:1px solid var(--line);break-inside:avoid}
+  .found li.pg{font-weight:800}
+  .found li.miss{color:var(--muted)}
+  .entry{text-align:center;font:700 30px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;min-height:40px;margin:22px 0 4px}
+  .entry .ctr{color:var(--game);-webkit-text-stroke:.5px var(--ink)}
+  .entry .caret{display:inline-block;width:2px;height:30px;background:var(--game);vertical-align:-4px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .hex{display:block;width:min(270px,82%);margin:0 auto;user-select:none}
+  .hex g{cursor:pointer}
+  .hex polygon{fill:var(--soft);transition:transform .08s}
+  .hex g.mid polygon{fill:var(--game)}
+  .hex text{font:700 28px/1 var(--sans);fill:var(--ink);text-transform:uppercase;pointer-events:none}
+  .hex g.mid text{fill:#121212}
+  .hex g:active polygon{opacity:.75}
+  .hctl{display:flex;justify-content:center;gap:10px;margin-top:14px}
+  .hctl .btn{background:transparent;border:1.5px solid var(--line);border-radius:999px;padding:12px 20px;color:var(--ink)}
+  .hctl .btn.sq{padding:12px 15px}
+  .give{text-align:center;margin-top:14px}
+  .give button{background:none;border:0;color:var(--muted);text-decoration:underline;font:600 14px/1 var(--sans);cursor:pointer}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
+</head>
+<body class="g-hive">
+<div class="splash" id="splash" hidden></div>
+<header class="gbar"><div class="wrap">
+  <a class="back" href="/" aria-label="All puzzles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></a>
+  <span data-icon="hive"></span>
+  <div class="gt"><h1 id="h">Mint Hive</h1><span id="d"></span></div>
+  <div class="tools">
+    <button class="clock" id="clock" aria-label="Pause"><span id="timer">0:00</span><svg viewBox="0 0 14 14" fill="currentColor"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg></button>
+    <button class="tb" id="helpBtn" aria-label="How to play"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.3a2.8 2.8 0 1 1 3.9 2.6c-.8.4-1.2 1-1.2 1.9v.4"/><circle cx="12" cy="17.2" r=".6" fill="currentColor"/></svg></button>
+    <button class="tb" id="statsBtn" aria-label="Statistics"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3.5" y="12" width="4" height="8.5" rx="1"/><rect x="10" y="4" width="4" height="16.5" rx="1"/><rect x="16.5" y="8.5" width="4" height="12" rx="1"/></svg></button>
+  </div>
+</div></header>
+<div class="wrap">
+
+  <div class="board-area">
+    <div class="rank" id="rank"></div>
+    <details class="found" id="found"></details>
+    <div class="entry" id="entry"></div>
+    <div class="msg" id="msg"></div>
+    <svg class="hex" id="hex" viewBox="-120 -120 240 240"></svg>
+    <div class="hctl"><button class="btn" id="del">Delete</button><button class="btn sq" id="mix" aria-label="Shuffle letters">↻</button><button class="btn" id="enter">Enter</button></div>
+    <div class="give"><button id="reveal">Show all answers</button></div>
+  </div>
+
+  <div class="done" id="done" hidden></div>
+
+  <h2>How to play</h2>
+  <ul class="how">
+    <li>Make words of at least four letters from the seven in the hive. Every word must use the center letter.</li>
+    <li>Letters can be used more than once. Common words only: no names, places or hyphens.</li>
+    <li>Four-letter words score 1 point; longer words score 1 point per letter. Each puzzle has at least one word that uses all seven letters, worth 7 bonus points.</li>
+    <li>Reach the Minty rank (half the points) to solve the day and keep your streak. You can keep going after that.</li>
+  </ul>
+
+  <div id="more"></div>
+</div>
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
+  <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
+  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+</div></footer>
+<script src="/assets/words-v1.js"></script>
+<script src="/assets/mint.js"></script>
+<script>Mint.splash("hive");</script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const date = Mint.pageDate();
+  const n = Mint.puzzleNumber(date);
+  const P = Mint.hivePuzzle(date);
+  const letters = new Set([P.center, ...P.outer]);
+  $("d").textContent = `No. ${n} · ${Mint.prettyDate(date)}${date === Mint.today() ? " · Today" : ""}`;
+
+  // Ranks are shares of the day's total points. Minty (half) solves the day.
+  const RANKS = [["Seedling", 0], ["Sprout", 0.02], ["Budding", 0.05], ["Growing", 0.1], ["Leafy", 0.18], ["Blooming", 0.28], ["Lush", 0.4], ["Minty", 0.5]];
+  const SOLVE = 0.5;
+  const PKEY = "mint:prog:hive:" + date;
+  let state = { found: [], revealed: false };
+  try { state = Object.assign(state, JSON.parse(localStorage.getItem(PKEY)) || {}); } catch {}
+  let outer = P.outer.slice(), cur = "";
+  const pangram = (w) => new Set(w).size === 7;
+  const points = () => state.found.reduce((s, w) => s + Mint.hiveScore(w), 0);
+  const rankAt = (pts) => RANKS.filter(([, f]) => pts >= Math.ceil(f * P.max)).length - 1;
+  const keep = () => { try { localStorage.setItem(PKEY, JSON.stringify(state)); } catch {} };
+
+  function render() {
+    const pts = points(), k = rankAt(pts), all = state.found.length === P.answers.length;
+    $("rank").innerHTML = `<b>${all ? "Every word!" : RANKS[k][0]}</b><div class="track">${RANKS.map((_, i) =>
+      i === k ? `<i class="here">${pts}</i>` : `<i class="${i < k ? "on" : ""}"></i>`).join("")}</div>`;
+
+    const list = state.revealed ? P.answers : state.found.slice().sort();
+    const open = $("found").open;
+    $("found").innerHTML = `<summary>You have found ${state.found.length} of ${P.answers.length} words</summary>
+      <ul>${list.map((w) => `<li class="${pangram(w) ? "pg" : ""} ${state.found.includes(w) ? "" : "miss"}">${w}</li>`).join("")}</ul>`;
+    $("found").open = open;
+
+    $("entry").innerHTML = [...cur].map((c) => c === P.center ? `<span class="ctr">${c}</span>` : letters.has(c) ? c : `<span style="color:var(--muted)">${c}</span>`).join("") + `<span class="caret"></span>`;
+
+    // Flat-topped hexagons: the center letter, then six around it.
+    const R = 38, D = 72;
+    const shape = [...Array(6).keys()].map((i) => `${(R * Math.cos((Math.PI / 3) * i)).toFixed(1)},${(R * Math.sin((Math.PI / 3) * i)).toFixed(1)}`).join(" ");
+    const cell = (c, x, y, mid) => `<g class="${mid ? "mid" : ""}" data-l="${c}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><polygon points="${shape}"/><text text-anchor="middle" y="10">${c}</text></g>`;
+    $("hex").innerHTML = cell(P.center, 0, 0, true) + outer.map((c, i) => {
+      const a = Math.PI / 6 + (Math.PI / 3) * i;
+      return cell(c, D * Math.cos(a), D * Math.sin(a), false);
+    }).join("");
+
+    const over = state.revealed;
+    ["del", "mix", "enter"].forEach((id) => ($(id).disabled = over));
+    $("reveal").parentElement.hidden = over;
+  }
+
+  function say(text, bad) {
+    $("msg").textContent = text;
+    $("msg").className = "msg" + (bad ? " bad" : "");
+  }
+  function nope(text) {
+    say(text, true);
+    $("entry").classList.remove("shake"); void $("entry").offsetWidth; $("entry").classList.add("shake");
+    setTimeout(() => { cur = ""; render(); }, 450);
+  }
+
+  function type(c) {
+    if (state.revealed || cur.length >= 19) return;
+    Mint.clock.start();
+    say("");
+    cur += c;
+    render();
+  }
+
+  function submit() {
+    const w = cur;
+    if (!w) return;
+    if (w.length < 4) return nope("Too short");
+    if ([...w].some((c) => !letters.has(c))) return nope("Bad letters");
+    if (!w.includes(P.center)) return nope("Missing center letter");
+    if (state.found.includes(w)) return nope("Already found");
+    if (!P.answers.includes(w)) return nope(Mint.isWord(w) ? "Not in today’s list" : "Not in the word list");
+    const before = rankAt(points());
+    state.found.push(w);
+    keep();
+    cur = "";
+    const pts = Mint.hiveScore(w);
+    say(pangram(w) ? `Pangram! +${pts}` : `${["Good!", "Nice!", "Great!", "Superb!"][Math.min(3, w.length - 4)]} +${pts}`);
+    render();
+    const now = rankAt(points());
+    if (now > before && now === RANKS.length - 1 && !Mint.result("hive", date)) win();
+  }
+
+  function win() {
+    const r = { solved: true, time: Mint.clock.secs, score: points(), words: state.found.length };
+    Mint.save("hive", date, r);
+    showDone(r);
+  }
+
+  function showDone(r) {
+    Mint.clock.set(r.time);
+    Mint.renderDone($("done"), {
+      eyebrow: `Mint Hive No. ${n}`,
+      title: r.solved ? "Minty! Day solved." : "Answers revealed.",
+      stats: [["Points", r.score], ["Words", r.words], ["Streak", Mint.streak("hive")]],
+      shareText: `Mint Hive No. ${n}: ${r.solved ? "reached Minty" : "played"} with ${r.words} words and ${r.score} points 🟧\nhttps://mintsitestudio.com/hive/`,
+    });
+  }
+
+  $("hex").onclick = (e) => { const g = e.target.closest("[data-l]"); if (g) type(g.dataset.l); };
+  $("del").onclick = () => { cur = cur.slice(0, -1); render(); };
+  $("enter").onclick = submit;
+  $("mix").onclick = () => {
+    for (let i = outer.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [outer[i], outer[j]] = [outer[j], outer[i]]; }
+    render();
+  };
+  $("reveal").onclick = () => {
+    const m = Mint.modal(`<h2 style="margin-top:0">Show all answers?</h2><p>This ends today’s game. Your points so far ${Mint.result("hive", date) ? "are already saved" : "will be saved, but the day won’t count as solved"}.</p>
+      <div class="row"><button class="btn p" id="yes">Show answers</button><button class="btn o" data-close>Keep playing</button></div>`);
+    m.querySelector("#yes").onclick = () => {
+      document.querySelector(".modal .x").click();
+      state.revealed = true;
+      keep();
+      if (!Mint.result("hive", date)) {
+        const r = { solved: false, time: Mint.clock.secs, score: points(), words: state.found.length };
+        Mint.save("hive", date, r);
+        showDone(r);
+      } else Mint.clock.stop();
+      $("found").open = true;
+      render();
+    };
+  };
+  document.addEventListener("keydown", (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey || document.body.classList.contains("modaling") || document.body.classList.contains("splashing")) return;
+    if (e.key === "Enter") submit();
+    else if (e.key === "Backspace") $("del").click();
+    else if (e.key === " ") { e.preventDefault(); $("mix").click(); }
+    else if (/^[a-zA-Z]$/.test(e.key)) type(e.key.toLowerCase());
+  });
+
+  render();
+  const saved = Mint.result("hive", date);
+  if (saved) showDone(saved);
+  Mint.renderMore($("more"), "hive");
+})();
+</script>
+</body>
+</html>
