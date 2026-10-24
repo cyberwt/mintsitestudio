@@ -101,6 +101,9 @@ export default {
 // ---- Mint Puzzles ----------------------------------------------------------
 // Puzzles are generated in the browser from the date, so a past day is the game
 // page with its own title and canonical URL. Days before launch or in the future 404.
+// Day pages are noindex,follow and stay out of the sitemap: their HTML is the game page's
+// shell (the puzzle is drawn client-side), so Google sees six near-duplicates a day.
+// /archive links them for players; the indexable pages are the game hubs and guides.
 
 function addDays(iso, n) {
   const [y, m, d] = iso.split("-").map(Number);
@@ -135,6 +138,7 @@ async function dailyPage(request, env, game, date) {
       element: (el) => el.setAttribute("content", `Play ${name}, the free ${GAMES[game]} puzzle for ${when}. No signup, works on phones.`),
     })
     .on('link[rel="canonical"]', { element: (el) => el.setAttribute("href", `https://mintsitestudio.com/${game}/${date}`) })
+    .on("head", { element: (el) => el.append('<meta name="robots" content="noindex, follow">', { html: true }) })
     .transform(page);
 }
 
@@ -182,10 +186,6 @@ function sitemap() {
   const urls = SITE_PAGES.map((p) => `https://mintsitestudio.com${p}`);
   for (const g of HOW_TO) urls.push(`https://mintsitestudio.com/how-to/${g}`);
   for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/`);
-  const end = new Date().toISOString().slice(0, 10);
-  for (let d = LAUNCH; d <= end; d = addDays(d, 1)) {
-    for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/${d}`);
-  }
   const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`;
   return new Response(body, { headers: { "content-type": "application/xml; charset=utf-8", "cache-control": "public, max-age=3600" } });
 }
