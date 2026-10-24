@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Puzzle Archive: Every Past Daily Puzzle, Free | Mint Puzzles</title>
+<meta name="description" content="Every past Mint Puzzles game is free to play: word, honeycomb, letter box, number, 6×6 sudoku and nonogram puzzles, by date.">
+<link rel="canonical" href="https://mintsitestudio.com/archive">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .guide{max-width:720px}
+  .guide .kick{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:28px 0 4px}
+  .guide h1{margin-top:0}
+  .guide .lede{font-size:18px;color:var(--muted)}
+  .guide table{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:15px}
+  .guide th,.guide td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .guide th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .guide .tbl{overflow-x:auto}
+  .guide pre{font:600 16px/1.5 ui-monospace,Menlo,monospace;background:var(--soft);border-radius:10px;padding:12px 14px;overflow-x:auto}
+  .playbox{display:flex;align-items:center;gap:14px;border:1.5px solid var(--ink);border-radius:14px;padding:14px 16px;margin:26px 0;background:var(--card)}
+  .playbox .icon{width:44px;height:44px;flex:none}
+  .playbox div{flex:1;line-height:1.35}
+  .playbox b{display:block;font:700 19px/1.2 var(--slab)}
+  .playbox span{color:var(--muted);font-size:14px}
+  .playbox .btn{white-space:nowrap;text-decoration:none}
+  @media (max-width:480px){.playbox{flex-wrap:wrap}.playbox .btn{width:100%;text-align:center}}
+  .glist{list-style:none;padding:0;margin:18px 0}
+  .glist li a{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+  .glist li .icon{width:36px;height:36px;flex:none}
+  .glist li b{display:block;font:700 18px/1.25 var(--slab)}
+  .glist li span{color:var(--muted);font-size:14.5px}
+  .acal{margin:6px 0 30px}
+  .acal h2{display:flex;align-items:center;gap:10px}
+  .acal h2 .icon{width:30px;height:30px}
+  .acal .row{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+  .days{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:6px}
+  .days a{display:block;padding:8px 6px;border-radius:10px;background:var(--soft);text-decoration:none;color:var(--ink);text-align:center;font-size:13px;line-height:1.25}
+  .days a b{display:block;font-size:15px}
+  .days a.solved{background:var(--c);color:#121212}
+  .days a.played{box-shadow:0 0 0 1.5px var(--ink) inset;background:transparent}
+  .days a.today{outline:2px solid var(--ink);outline-offset:2px}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><i></i>Mint Puzzles</a>
+  <nav class="nav"><a href="/word/"><em style="--c:var(--word)"></em>Word</a><a href="/hive/"><em style="--c:var(--hive)"></em>Hive</a><a href="/box/"><em style="--c:var(--box)"></em>Box</a><a href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
+</div></header>
+<main class="wrap">
+  <h1>The archive</h1>
+  <p class="sub">Every past puzzle, free to play. Solved days fill in with the game’s color. <span id="count"></span></p>
+  <div id="cal"></div>
+</main>
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
+  <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+</div></footer>
+<script src="/assets/mint.js"></script>
+<script>document.querySelectorAll("[data-icon]").forEach((x) => (x.innerHTML = Mint.icon(x.dataset.icon)));</script>
+<script>
+(() => {
+  const t = Mint.today(), GAMES = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
+  let played = 0, total = 0;
+  document.getElementById("cal").innerHTML = GAMES.map((g) => {
+    const cells = [];
+    for (let d = t; d >= Mint.LAUNCH; d = Mint.addDays(d, -1)) {
+      const r = Mint.result(g, d), cls = [r ? (r.solved ? "solved" : "played") : "", d === t ? "today" : ""].join(" ").trim();
+      total++; if (r) played++;
+      cells.push(`<a class="${cls}" href="/${g}/${d === t ? "" : d}"><b>No. ${Mint.puzzleNumber(d)}</b>${d === t ? "Today" : Mint.prettyDate(d).replace(/, \d{4}$/, "")}${r ? (r.solved ? " ✓" : " ·") : ""}</a>`);
+    }
+    const rnd = Mint.randomPastDay(g), y = Mint.addDays(t, -1);
+    return `<section class="acal" style="--c:var(--${g})"><h2>${Mint.icon(g)}${Mint.NAMES[g]}</h2>
+      <div class="row"><a class="btn p" href="/${g}/">Today’s</a>${y >= Mint.LAUNCH ? `<a class="btn o" href="/${g}/${y}">Yesterday’s</a>` : ""}${rnd ? `<a class="btn o" href="/${g}/${rnd}">Random</a>` : ""}<a class="btn o" href="/how-to/${g}">How to play</a></div>
+      <div class="days">${cells.join("")}</div></section>`;
+  }).join("");
+  document.getElementById("count").textContent = `${total} puzzles so far. You’ve played ${played}.`;
+})();
+</script>
+</body>
+</html>

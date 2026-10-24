@@ -1,6 +1,8 @@
 // Mint Site Studio Worker.
 //   mintsitestudio.com          -> Mint Puzzles (daily games, public/index.html + /word /hive /box /sum /sudoku /nonogram)
 //                                  /<game>/YYYY-MM-DD serves that game's page for a past day; /creators -> seller.
+//                                  /embed/<game> is the game page made for an iframe on someone else's site.
+//                                  Once the iPhone app is live, every page gets the App Store banner tag.
 //   www.mintsitestudio.com      -> 301 to the apex
 //   seller.mintsitestudio.com /  -> creator pitch page (public/creators.html); other paths -> apex
 //   demo.mintsitestudio.com  /  -> demo deal feed, /studio card tool, /creators pitch, /api/draft
@@ -21,7 +23,11 @@ const GAMES = {
   sudoku: "Mini Sudoku",
   nonogram: "Mint Nonogram",
 };
-const SITE_PAGES = ["/", "/about", "/privacy"];
+const SITE_PAGES = ["/", "/archive", "/how-to", "/embed", "/about", "/privacy"];
+const HOW_TO = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
+// Mint Puzzles on the App Store (ASC app 6826092706). The banner tag goes out only once
+// the iTunes lookup API returns it, i.e. after Apple approves and releases the app.
+const APP_STORE_ID = "6826092706";
 // Public by design: IndexNow checks it against https://mintsitestudio.com/<key>.txt.
 const INDEXNOW_KEY = "c6ec84f59db39c6516ece9b760180dd2";
 
@@ -72,8 +78,10 @@ export default {
       }
       if (url.pathname === "/sitemap.xml") return sitemap();
       const m = url.pathname.match(/^\/(word|hive|box|sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
-      if (m) return dailyPage(request, env, m[1], m[2]);
-      return env.ASSETS.fetch(request);
+      if (m) return withAppBanner(await dailyPage(request, env, m[1], m[2]));
+      const e = url.pathname.match(/^\/embed\/(word|hive|box|sum|sudoku|nonogram)\/?$/);
+      if (e) return embedPage(request, env, e[1]);
+      return withAppBanner(await env.ASSETS.fetch(request));
     }
 
     if (url.pathname === "/api/draft") {
@@ -130,8 +138,49 @@ async function dailyPage(request, env, game, date) {
     .transform(page);
 }
 
+// The game page inside someone else's iframe: no index, links open a new tab, a credit
+// link back to the game. Embedding sites paste the snippet from /embed.
+async function embedPage(request, env, game) {
+  const page = await env.ASSETS.fetch(new Request(new URL(`/${game}/`, request.url), request));
+  return new HTMLRewriter()
+    .on("head", {
+      element: (el) => el.append('<meta name="robots" content="noindex"><base target="_blank">', { html: true }),
+    })
+    .on("body", {
+      element(el) {
+        el.setAttribute("class", `${el.getAttribute("class") || ""} embed`.trim());
+        el.append(`<a class="embed-credit" href="https://mintsitestudio.com/${game}/?utm_source=embed">Free daily puzzles at <b>Mint Puzzles</b> ↗</a>`, { html: true });
+      },
+    })
+    .transform(page);
+}
+
+// Is the app on the App Store yet? Asks Apple's public lookup API, cached for 6 hours
+// at the edge and for the life of this isolate once it says yes.
+let appLiveSeen = false;
+async function appLive() {
+  if (appLiveSeen) return true;
+  try {
+    const res = await fetch(`https://itunes.apple.com/lookup?id=${APP_STORE_ID}&country=us`, {
+      cf: { cacheTtl: 21600, cacheEverything: true },
+      signal: AbortSignal.timeout(1500),
+    });
+    const data = await res.json();
+    appLiveSeen = data.resultCount > 0;
+  } catch {}
+  return appLiveSeen;
+}
+
+async function withAppBanner(res) {
+  if (!(res.headers.get("content-type") || "").includes("text/html") || !(await appLive())) return res;
+  return new HTMLRewriter()
+    .on("head", { element: (el) => el.append(`<meta name="apple-itunes-app" content="app-id=${APP_STORE_ID}">`, { html: true }) })
+    .transform(res);
+}
+
 function sitemap() {
   const urls = SITE_PAGES.map((p) => `https://mintsitestudio.com${p}`);
+  for (const g of HOW_TO) urls.push(`https://mintsitestudio.com/how-to/${g}`);
   for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/`);
   const end = new Date().toISOString().slice(0, 10);
   for (let d = LAUNCH; d <= end; d = addDays(d, 1)) {

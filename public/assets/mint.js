@@ -67,6 +67,22 @@
     return t < LAUNCH ? LAUNCH : t;
   }
 
+  // The link in a shared result: the same day's puzzle, tagged so GA4 counts the
+  // visit under source "share".
+  function shareUrl(game, date) {
+    return `https://mintsitestudio.com/${game}/${date}?utm_source=share`;
+  }
+
+  // A past day for this game, preferring one this browser hasn't played. Null on launch day.
+  function randomPastDay(game) {
+    const days = [];
+    for (let d = addDays(today(), -1); d >= LAUNCH; d = addDays(d, -1)) days.push(d);
+    if (!days.length) return null;
+    const fresh = days.filter((d) => !result(game, d));
+    const pool = fresh.length ? fresh : days;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
   // ---- Saved progress (this browser only) ----------------------------------
 
   const KEY = "mint:v1";
@@ -375,8 +391,12 @@
       const mark = done ? (done.solved ? " ✓" : " ·") : "";
       past += `<a class="chip${d === date ? " on" : ""}" href="/${game}/${d}">#${puzzleNumber(d)} ${prettyDate(d).replace(/, \d{4}$/, "")}${mark}</a>`;
     }
+    const y = addDays(today(), -1), rnd = randomPastDay(game);
+    const jump = y >= LAUNCH
+      ? `<div class="chips jump"><a class="chip" href="/${game}/${y}">Play yesterday’s</a>${rnd ? `<a class="chip" href="/${game}/${rnd}">Random past puzzle</a>` : ""}<a class="chip" href="/archive">All games, every day →</a></div>`
+      : "";
     el.innerHTML = `<h2>Play next</h2><div class="chips">${others.join("")}</div>
-      <h2>Archive</h2><p class="sub" style="margin-top:-6px">Every past puzzle is free to play.</p><div class="chips">${past}</div>`;
+      <h2>Archive</h2><p class="sub" style="margin-top:-6px">Every past puzzle is free to play.</p>${jump}<div class="chips">${past}</div>`;
   }
 
   // ---- Look: icons, toolbar, splash, modals, result card ------------------------
@@ -521,8 +541,30 @@
       ${isToday
         ? `<div class="next"><span>Next puzzle in</span><b data-count>${untilMidnight()}</b></div>`
         : `<div class="next"><span>You’re playing No. ${puzzleNumber(pageDate())}</span><a href="/${game}/">Play today’s →</a></div>`}
+      ${pastLinks(game)}${appLine()}
       ${next.length ? `<div class="sh">Up next</div><div class="upnext">${next.map((g) => `<a href="/${g}/" style="--c:${COLORS[g]}">${icon(g)}<span><b>${NAMES[g]}</b>${TAGS[g]}</span><i>Play</i></a>`).join("")}</div>` : ""}`;
   }
+  // "Can't wait for tomorrow?" links: yesterday (if unplayed) and a random past day.
+  function pastLinks(game) {
+    const y = addDays(today(), -1), rnd = randomPastDay(game);
+    if (!rnd) return "";
+    const links = [];
+    if (y >= LAUNCH && !result(game, y) && pageDate() !== y) links.push(`<a href="/${game}/${y}">Play yesterday’s</a>`);
+    links.push(`<a href="/${game}/${rnd}">Random past puzzle</a>`, `<a href="/archive">Archive</a>`);
+    return `<div class="next past"><span>Want another?</span><span class="links">${links.join("")}</span></div>`;
+  }
+
+  // On iPhone/iPad Safari, once the Worker has added the App Store banner tag (the app is
+  // live), point players at the app. Never inside the app itself.
+  function appLine() {
+    const d = root.document;
+    if (!d || root.ReactNativeWebView || !/iPhone|iPad|iPod/.test(root.navigator.userAgent)) return "";
+    const tag = d.querySelector('meta[name="apple-itunes-app"]');
+    const id = tag && (tag.content.match(/app-id=(\d+)/) || [])[1];
+    if (!id) return "";
+    return `<a class="appline" href="https://apps.apple.com/app/id${id}" onclick="typeof gtag==='function'&&gtag('event','app_click',{placement:'result'})"><b>Get Mint Puzzles for iPhone</b><span>All six games offline, streak reminders, Game Center.</span></a>`;
+  }
+
   function tickCountdown(wrap) {
     const el = wrap.querySelector("[data-count]");
     if (el) wrap._tick = setInterval(() => (el.textContent = untilMidnight()), 1000);
@@ -596,12 +638,17 @@
   }
 
   async function share(text, btn) {
+    const track = (method) => {
+      if (typeof root.gtag === "function") root.gtag("event", "share", { method, content_type: Mint.game, item_id: pageDate() });
+    };
     try {
       if (root.navigator.share && /Mobi|Android|iPhone/.test(root.navigator.userAgent)) {
         await root.navigator.share({ text });
+        track("native");
         return;
       }
       await root.navigator.clipboard.writeText(text);
+      track("copy");
       const was = btn.textContent;
       btn.textContent = "Copied to clipboard";
       setTimeout(() => (btn.textContent = was), 1600);
@@ -609,7 +656,7 @@
   }
 
   root.Mint = {
-    LAUNCH, rng, hash, today, addDays, prettyDate, puzzleNumber, pageDate,
+    LAUNCH, rng, hash, today, addDays, prettyDate, puzzleNumber, pageDate, shareUrl, randomPastDay,
     save, result, streak, stats, fmtTime, renderMore, share, icon, splash, renderDone, NAMES,
     clock, help, showStats,
     sumPuzzle, sudokuPuzzle, sudokuCount, nonogramPuzzle, lineSolve, runs,

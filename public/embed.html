@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embed a Free Daily Puzzle on Your Site | Mint Puzzles</title>
+<meta name="description" content="Add a free, playable daily puzzle to your blog, newsletter page or classroom site. Copy one line of code. No sign-up, no ads in the puzzle.">
+<link rel="canonical" href="https://mintsitestudio.com/embed">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'><rect x='2' y='2' width='44' height='44' rx='10' fill='%238fd8b8' stroke='%23121212' stroke-width='3'/><rect x='15' y='15' width='18' height='18' rx='3' fill='%23121212'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  .guide{max-width:720px}
+  .guide .kick{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:28px 0 4px}
+  .guide h1{margin-top:0}
+  .guide .lede{font-size:18px;color:var(--muted)}
+  .guide table{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:15px}
+  .guide th,.guide td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .guide th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .guide .tbl{overflow-x:auto}
+  .guide pre{font:600 16px/1.5 ui-monospace,Menlo,monospace;background:var(--soft);border-radius:10px;padding:12px 14px;overflow-x:auto}
+  .playbox{display:flex;align-items:center;gap:14px;border:1.5px solid var(--ink);border-radius:14px;padding:14px 16px;margin:26px 0;background:var(--card)}
+  .playbox .icon{width:44px;height:44px;flex:none}
+  .playbox div{flex:1;line-height:1.35}
+  .playbox b{display:block;font:700 19px/1.2 var(--slab)}
+  .playbox span{color:var(--muted);font-size:14px}
+  .playbox .btn{white-space:nowrap;text-decoration:none}
+  @media (max-width:480px){.playbox{flex-wrap:wrap}.playbox .btn{width:100%;text-align:center}}
+  .glist{list-style:none;padding:0;margin:18px 0}
+  .glist li a{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}
+  .glist li .icon{width:36px;height:36px;flex:none}
+  .glist li b{display:block;font:700 18px/1.25 var(--slab)}
+  .glist li span{color:var(--muted);font-size:14.5px}
+  .pick{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+  .pick button{font:600 14px var(--sans);padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+  .pick button.on{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+  textarea{width:100%;box-sizing:border-box;min-height:120px;font:13px/1.45 ui-monospace,Menlo,monospace;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--ink)}
+  .prev{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:18px 0;max-width:480px}
+  .prev iframe{display:block;width:100%;height:640px;border:0}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/"><i></i>Mint Puzzles</a>
+  <nav class="nav"><a href="/word/"><em style="--c:var(--word)"></em>Word</a><a href="/hive/"><em style="--c:var(--hive)"></em>Hive</a><a href="/box/"><em style="--c:var(--box)"></em>Box</a><a href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
+</div></header>
+<main class="wrap guide">
+  <p class="kick">For bloggers, teachers and site owners</p>
+  <h1>Put a daily puzzle on your site</h1>
+  <p class="lede">Give your readers a free puzzle that changes every day. Pick a game, copy the code, and paste it into any page that accepts HTML. There’s nothing to sign up for and nothing to update.</p>
+  <h2>1. Pick a game</h2>
+  <div class="pick" id="pick"></div>
+  <h2>2. Copy the code</h2>
+  <textarea id="code" readonly aria-label="Embed code"></textarea>
+  <p><button class="btn p" id="copy">Copy the code</button></p>
+  <h2>Preview</h2>
+  <div class="prev"><iframe id="frame" title="Embedded puzzle preview" allow="clipboard-write; web-share"></iframe></div>
+  <h2>Good to know</h2>
+  <ul class="how">
+    <li>The puzzle updates itself at midnight in each reader’s time zone, so your page always shows today’s puzzle.</li>
+    <li>Readers can play the whole puzzle on your page. Links inside the puzzle open in a new tab.</li>
+    <li>Readers’ progress is saved in their own browser. We don’t add ads to embedded puzzles.</li>
+    <li>Please keep the link line under the puzzle: it tells readers where the puzzle comes from.</li>
+    <li>Questions? Email <a href="mailto:hello@mintsitestudio.com">hello@mintsitestudio.com</a>.</li>
+  </ul>
+</main>
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
+  <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+</div></footer>
+<script src="/assets/mint.js"></script>
+<script>document.querySelectorAll("[data-icon]").forEach((x) => (x.innerHTML = Mint.icon(x.dataset.icon)));</script>
+<script>
+(() => {
+  const GAMES = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
+  let g = "sum";
+  const $ = (id) => document.getElementById(id);
+  const snippet = (g) => `<iframe src="https://mintsitestudio.com/embed/${g}" title="${Mint.NAMES[g]}, a free daily puzzle" width="100%" height="640" style="max-width:480px;border:1px solid #dcdcdc;border-radius:12px" loading="lazy" allow="clipboard-write; web-share"></iframe>\n<p><a href="https://mintsitestudio.com/${g}/">${Mint.NAMES[g]}</a>: a free daily puzzle from Mint Puzzles</p>`;
+  function show() {
+    $("pick").innerHTML = GAMES.map((x) => `<button class="${x === g ? "on" : ""}" data-g="${x}">${Mint.NAMES[x]}</button>`).join("");
+    $("code").value = snippet(g);
+    $("frame").src = `/embed/${g}`;
+  }
+  $("pick").onclick = (e) => { const b = e.target.closest("[data-g]"); if (b) { g = b.dataset.g; show(); } };
+  $("copy").onclick = async () => {
+    try { await navigator.clipboard.writeText($("code").value); $("copy").textContent = "Copied"; setTimeout(() => ($("copy").textContent = "Copy the code"), 1600); } catch { $("code").select(); }
+    if (typeof gtag === "function") gtag("event", "embed_copy", { content_type: g });
+  };
+  show();
+})();
+</script>
+</body>
+</html>

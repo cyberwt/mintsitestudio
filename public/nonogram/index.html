@@ -64,13 +64,14 @@
     <li>Tap or drag to fill squares. Switch to ✕ to mark squares you know are empty; marks are only notes.</li>
     <li>A clue fades when its line matches. Every puzzle can be solved by logic alone, one line at a time.</li>
   </ul>
+  <p class="sub"><a href="/how-to/nonogram">Tips and techniques: read the full guide →</a></p>
 
   <div id="more"></div>
 </div>
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
   <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
-  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 <script src="/assets/mint.js"></script>
 <script>Mint.splash("nonogram");</script>
@@ -175,7 +176,7 @@
       eyebrow: `Mint Nonogram No. ${num}`,
       title: "Picture complete.",
       stats: [["Time", Mint.fmtTime(r.time)], ["Streak", Mint.streak("nonogram")]],
-      shareText: `Mint Nonogram No. ${num} solved in ${Mint.fmtTime(r.time)} 🟪\nhttps://mintsitestudio.com/nonogram/`,
+      shareText: `Mint Nonogram No. ${num} solved in ${Mint.fmtTime(r.time)} 🟪\n${Mint.shareUrl("nonogram", date)}`,
     });
   }
 

@@ -77,13 +77,14 @@
     <li>Four-letter words score 1 point; longer words score 1 point per letter. Each puzzle has at least one word that uses all seven letters, worth 7 bonus points.</li>
     <li>Reach the Minty rank (half the points) to solve the day and keep your streak. You can keep going after that.</li>
   </ul>
+  <p class="sub"><a href="/how-to/hive">Tips and techniques: read the full guide →</a></p>
 
   <div id="more"></div>
 </div>
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
   <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
-  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 <script src="/assets/words-v1.js"></script>
 <script src="/assets/mint.js"></script>
@@ -185,7 +186,7 @@
       eyebrow: `Mint Hive No. ${n}`,
       title: r.solved ? "Minty! Day solved." : "Answers revealed.",
       stats: [["Points", r.score], ["Words", r.words], ["Streak", Mint.streak("hive")]],
-      shareText: `Mint Hive No. ${n}: ${r.solved ? "reached Minty" : "played"} with ${r.words} words and ${r.score} points 🟧\nhttps://mintsitestudio.com/hive/`,
+      shareText: `Mint Hive No. ${n}: ${r.solved ? "reached Minty" : "played"} with ${r.words} words and ${r.score} points 🟧\n${Mint.shareUrl("hive", date)}`,
     });
   }
 

@@ -69,13 +69,14 @@
     <li>Only whole numbers are allowed: subtraction can't go below zero and division must come out even.</li>
     <li>Each day has three rounds: Easy, Medium and Hard. Every target has at least one exact solution.</li>
   </ul>
+  <p class="sub"><a href="/how-to/sum">Tips and techniques: read the full guide →</a></p>
 
   <div id="more"></div>
 </div>
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
   <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
-  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 <script src="/assets/mint.js"></script>
 <script>Mint.splash("sum");</script>
@@ -206,7 +207,7 @@
       eyebrow: `Mint Sum No. ${n}`,
       title: solved === 3 ? "All three. Nicely done." : solved ? `${solved} of 3 rounds solved` : "There's always tomorrow",
       stats: [["Rounds", `${solved}/3`], ["Time", Mint.fmtTime(r.time)], ["Streak", Mint.streak("sum")]],
-      shareText: `Mint Sum No. ${n} ${squares}\nhttps://mintsitestudio.com/sum/`,
+      shareText: `Mint Sum No. ${n} ${squares}\n${Mint.shareUrl("sum", date)}`,
     });
   }
 

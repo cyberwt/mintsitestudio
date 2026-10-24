@@ -184,3 +184,19 @@ footer .logo{color:var(--ink)}
 .shake{animation:shake .2s 2}
 @keyframes pop{50%{transform:scale(1.08)}}
 .pop{animation:pop .25s}
+
+/* "Want another?" row in the stats/result modal, and the iPhone app line. */
+.next.past{margin-top:0;border-top:0}
+.next.past>span:first-child{white-space:nowrap}
+.next.past .links{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px 14px}
+.chips.jump{margin-bottom:10px}
+.chips.jump .chip{background:var(--card);box-shadow:0 0 0 1.5px var(--ink) inset}
+.appline{display:block;margin:14px 0 0;padding:12px 14px;border-radius:12px;background:var(--soft);text-decoration:none;color:var(--ink);font-size:13.5px;line-height:1.35}
+.appline b{display:block;font:700 16px/1.2 var(--slab);margin-bottom:2px}
+.appline span{color:var(--muted)}
+.modal.result .appline{margin-left:22px;margin-right:22px;margin-bottom:22px}
+
+/* /embed/<game>: the game page inside another site's iframe. */
+body.embed footer,body.embed #more,body.embed .gbar .back,body.embed .splash .home{display:none}
+body.embed{padding-bottom:44px}
+.embed-credit{position:fixed;left:0;right:0;bottom:0;z-index:4;display:block;text-align:center;padding:10px;font-size:13px;background:var(--soft);border-top:1px solid var(--line);color:var(--ink);text-decoration:none}

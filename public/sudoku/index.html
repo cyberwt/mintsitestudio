@@ -60,13 +60,14 @@
     <li>Tap a square, then tap a number. On a keyboard, use the arrow keys and type 1 to 6.</li>
     <li>Each puzzle has exactly one solution, and you can always find the next number by logic.</li>
   </ul>
+  <p class="sub"><a href="/how-to/sudoku">Tips and techniques: read the full guide →</a></p>
 
   <div id="more"></div>
 </div>
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
   <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
-  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 <script src="/assets/mint.js"></script>
 <script>Mint.splash("sudoku");</script>
@@ -125,7 +126,7 @@
       eyebrow: `Mini Sudoku No. ${n}`,
       title: "Solved. Nicely done.",
       stats: [["Time", Mint.fmtTime(r.time)], ["Streak", Mint.streak("sudoku")]],
-      shareText: `Mini Sudoku No. ${n} solved in ${Mint.fmtTime(r.time)} 🟨\nhttps://mintsitestudio.com/sudoku/`,
+      shareText: `Mini Sudoku No. ${n} solved in ${Mint.fmtTime(r.time)} 🟨\n${Mint.shareUrl("sudoku", date)}`,
     });
   }
 

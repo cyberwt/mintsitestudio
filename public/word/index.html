@@ -62,13 +62,14 @@
     <li>After each guess the tiles change color: <b style="color:var(--ok)">teal</b> means the letter is in the right spot, <b style="color:var(--near)">orange</b> means it is in the word but in another spot, and grey means it is not in the word.</li>
     <li>Letters can appear more than once. Type on your keyboard or tap the keys below the grid.</li>
   </ul>
+  <p class="sub"><a href="/how-to/word">Tips and techniques: read the full guide →</a></p>
 
   <div id="more"></div>
 </div>
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo" href="/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
   <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
-  <div class="fcol"><b>About</b><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 <script src="/assets/words-v1.js"></script>
 <script src="/assets/mint.js"></script>
@@ -172,7 +173,7 @@
       eyebrow: `Mint Word No. ${n}`,
       title: r.solved ? ["Mint condition!", "Brilliant.", "Sharp work.", "Nicely done.", "Got there.", "Just in time."][r.tries - 1] : "So close. Try tomorrow’s.",
       stats: [["Guesses", r.solved ? `${r.tries}/6` : "X/6"], ["Time", Mint.fmtTime(r.time)], ["Streak", Mint.streak("word")]],
-      shareText: `Mint Word No. ${n} ${r.solved ? r.tries : "X"}/6\n${grid}\nhttps://mintsitestudio.com/word/`,
+      shareText: `Mint Word No. ${n} ${r.solved ? r.tries : "X"}/6\n${grid}\n${Mint.shareUrl("word", date)}`,
     });
   }
 
