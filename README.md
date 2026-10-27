@@ -9,7 +9,7 @@ Live:
 
 - Puzzles are generated in the browser from the date (`public/assets/mint.js`, seeded by `<game>:<YYYY-MM-DD>`), so there is no puzzle data to store. Each generator is solver-checked: Sum targets are built from the numbers, Sudoku keeps exactly one solution, Nonograms must be line-solvable.
 - `/<game>/YYYY-MM-DD` is the same page with its own title + canonical (HTMLRewriter in the Worker); days before `LAUNCH` or in the future 404. Day pages are `noindex, follow` and not in `/sitemap.xml` (identical HTML shell; /archive links them).
-- Progress and streaks live in the player's localStorage only. No analytics or ads yet.
+- Progress and streaks live in the player's localStorage only. GA4 (G-Z6MWGC8P1P) + Grow by Mediavine (Journey prerequisite, added 2026-10-27) are inlined in each apex page's <head>; embed.html stays script-free. No ads yet.
 - Word, Hive and Box (added 2026-10-22) read the frozen word list `public/assets/words-v1.js`, built from SCOWL by `scripts/build-words.py` (credit + license in `/assets/scowl-copyright.txt`, linked from /about). Never rebuild v1; make words-v2.js with a cutover date. They are original takes on NYT's Wordle / Spelling Bee / Letter Boxed mechanics: keep our own names, colors (teal/orange, not green/yellow), emoji and messages.
 - Changing a generator changes every past puzzle. Version it (e.g. a new seed prefix from a cutover date) instead of editing in place.
 - Local preview: `npx wrangler@4 dev --port 8791` (localhost acts as the apex).
