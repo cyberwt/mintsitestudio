@@ -20,6 +20,7 @@
   .hero .kicker{font:400 clamp(19px,4.4vw,24px)/1.2 var(--slab);color:var(--muted);margin:0 0 6px}
   .hero h1{font-size:clamp(40px,9.5vw,68px);line-height:1;margin:0 0 14px;letter-spacing:-.02em}
   .hero .sub{font-size:17.5px;max-width:540px;margin:0 auto;color:var(--muted)}
+  .hero .go{margin:22px 0 0}
 
   .sec{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin:38px 0 16px}
   .sec h2{margin:0;font-size:26px}
@@ -146,6 +147,7 @@
     <p class="kicker" id="greet">Good day.</p>
     <h1>Daily puzzles. Always free.</h1>
     <p class="sub">Six new games every morning, and every past puzzle in the archive. No subscription, no account, no paywall.</p>
+    <p class="go"><a class="btn p" id="hero-cta" href="/word/">Play today’s puzzles</a></p>
   </section>
 
   <div class="sec"><h2>Today’s puzzles</h2><span id="done-count"></span></div>
@@ -300,6 +302,10 @@
   $("games").innerHTML = order.slice(0, 3).map(card).join("");
   $("games2").innerHTML = order.slice(3).map(card).join("");
   $("done-count").textContent = solvedCount === GAMES.length ? "All six done. See you tomorrow." : `${solvedCount} of ${GAMES.length} played`;
+  // Hero: one button to the first game not yet played today (archive once all six are done).
+  const next = order.find((g) => !Mint.result(g, t)), cta = $("hero-cta");
+  if (next) { cta.href = `/${next}/`; cta.textContent = `Play ${Mint.NAMES[next]}`; }
+  else { cta.href = "/archive"; cta.textContent = "Play a past puzzle"; }
 
   // ---- Your week (Monday to Sunday) -------------------------------------
   const dow = (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
