@@ -51,52 +51,66 @@ export default {
   },
 
   async fetch(request, env) {
-    const url = new URL(request.url);
-    // `wrangler dev` acts as the apex so the puzzle site can be checked locally.
-    if (url.hostname === "localhost") url.hostname = "mintsitestudio.com";
-
-    if (url.hostname === "www.mintsitestudio.com") {
-      url.hostname = "mintsitestudio.com";
-      return Response.redirect(url.toString(), 301);
-    }
-
-    if (url.hostname === "seller.mintsitestudio.com") {
-      if (url.pathname === "/" || url.pathname === "/creators") {
-        return env.ASSETS.fetch(new Request(new URL("/creators", url.origin), request));
-      }
-      if (url.pathname in DEMO_PATHS || url.pathname.startsWith("/demo")) {
-        return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
-      }
-      if (url.pathname === "/robots.txt" || url.pathname === "/favicon.ico") return env.ASSETS.fetch(request);
-      return Response.redirect(`https://mintsitestudio.com${url.pathname}${url.search}`, 301);
-    }
-
-    if (url.hostname === "mintsitestudio.com") {
-      if (url.pathname === "/creators") return Response.redirect("https://seller.mintsitestudio.com/", 301);
-      if (url.pathname in DEMO_PATHS && url.pathname !== "/" || url.pathname.startsWith("/demo")) {
-        return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
-      }
-      if (url.pathname === "/sitemap.xml") return sitemap();
-      const m = url.pathname.match(/^\/(word|hive|box|sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
-      if (m) return withAppBanner(await dailyPage(request, env, m[1], m[2]));
-      const e = url.pathname.match(/^\/embed\/(word|hive|box|sum|sudoku|nonogram)\/?$/);
-      if (e) return embedPage(request, env, e[1]);
-      return withAppBanner(await env.ASSETS.fetch(request));
-    }
-
-    if (url.pathname === "/api/draft") {
-      if (request.method !== "POST") return json({ error: "POST only" }, 405);
-      return draftCard(request);
-    }
-
-    const mapped = DEMO_PATHS[url.pathname];
-    if (mapped) {
-      const assetUrl = new URL(mapped, url.origin);
-      return env.ASSETS.fetch(new Request(assetUrl, request));
-    }
-    return env.ASSETS.fetch(request);
+    return withBeacon(await route(request, env));
   },
 };
+
+async function route(request, env) {
+  const url = new URL(request.url);
+  // `wrangler dev` acts as the apex so the puzzle site can be checked locally.
+  if (url.hostname === "localhost") url.hostname = "mintsitestudio.com";
+
+  if (url.hostname === "www.mintsitestudio.com") {
+    url.hostname = "mintsitestudio.com";
+    return Response.redirect(url.toString(), 301);
+  }
+
+  if (url.hostname === "seller.mintsitestudio.com") {
+    if (url.pathname === "/" || url.pathname === "/creators") {
+      return env.ASSETS.fetch(new Request(new URL("/creators", url.origin), request));
+    }
+    if (url.pathname in DEMO_PATHS || url.pathname.startsWith("/demo")) {
+      return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
+    }
+    if (url.pathname === "/robots.txt" || url.pathname === "/favicon.ico") return env.ASSETS.fetch(request);
+    return Response.redirect(`https://mintsitestudio.com${url.pathname}${url.search}`, 301);
+  }
+
+  if (url.hostname === "mintsitestudio.com") {
+    if (url.pathname === "/creators") return Response.redirect("https://seller.mintsitestudio.com/", 301);
+    if (url.pathname in DEMO_PATHS && url.pathname !== "/" || url.pathname.startsWith("/demo")) {
+      return Response.redirect(`https://demo.mintsitestudio.com${url.pathname === "/demo/" ? "/" : url.pathname}`, 302);
+    }
+    if (url.pathname === "/sitemap.xml") return sitemap();
+    const m = url.pathname.match(/^\/(word|hive|box|sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
+    if (m) return withAppBanner(await dailyPage(request, env, m[1], m[2]));
+    const e = url.pathname.match(/^\/embed\/(word|hive|box|sum|sudoku|nonogram)\/?$/);
+    if (e) return embedPage(request, env, e[1]);
+    return withAppBanner(await env.ASSETS.fetch(request));
+  }
+
+  if (url.pathname === "/api/draft") {
+    if (request.method !== "POST") return json({ error: "POST only" }, 405);
+    return draftCard(request);
+  }
+
+  const mapped = DEMO_PATHS[url.pathname];
+  if (mapped) {
+    const assetUrl = new URL(mapped, url.origin);
+    return env.ASSETS.fetch(new Request(assetUrl, request));
+  }
+  return env.ASSETS.fetch(request);
+}
+
+// Cloudflare Web Analytics goes on every HTML page from here, not by Cloudflare's automatic
+// injection (off for this zone), so browsers marked internal skip it: ?mint_internal=1 marks
+// this browser (localStorage) for our own checks, ?mint_internal=0 clears it.
+const CF_BEACON = `<script data-cfasync="false">(function(){try{var q=new URLSearchParams(location.search).get("mint_internal"),l=localStorage;if(q==="1")l.setItem("mint_internal","1");else if(q==="0")l.removeItem("mint_internal");if(l.getItem("mint_internal")==="1")return}catch(e){}var b=document.createElement("script");b.defer=true;b.src="https://static.cloudflareinsights.com/beacon.min.js";b.setAttribute("data-cf-beacon",'{"token": "5bc59af4c2c44eab9ae69c462fc9afe4"}');document.head.appendChild(b)})();</script>`;
+
+function withBeacon(res) {
+  if (!(res.headers.get("content-type") || "").includes("text/html")) return res;
+  return new HTMLRewriter().on("head", { element: (el) => el.append(CF_BEACON, { html: true }) }).transform(res);
+}
 
 // ---- Mint Puzzles ----------------------------------------------------------
 // Puzzles are generated in the browser from the date, so a past day is the game
