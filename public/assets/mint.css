@@ -200,3 +200,4 @@ footer .logo{color:var(--ink)}
 body.embed footer,body.embed #more,body.embed .gbar .back,body.embed .splash .home{display:none}
 body.embed{padding-bottom:44px}
 .embed-credit{position:fixed;left:0;right:0;bottom:0;z-index:4;display:block;text-align:center;padding:10px;font-size:13px;background:var(--soft);border-top:1px solid var(--line);color:var(--ink);text-decoration:none}
+.embed-credit a{color:inherit;text-decoration:none}

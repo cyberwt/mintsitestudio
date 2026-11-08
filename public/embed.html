@@ -79,7 +79,7 @@
   const GAMES = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
   let g = "sum";
   const $ = (id) => document.getElementById(id);
-  const snippet = (g) => `<iframe src="https://mintsitestudio.com/embed/${g}" title="${Mint.NAMES[g]}, a free daily puzzle" width="100%" height="640" style="max-width:480px;border:1px solid #dcdcdc;border-radius:12px" loading="lazy" allow="clipboard-write; web-share"></iframe>\n<p><a href="https://mintsitestudio.com/${g}/">${Mint.NAMES[g]}</a>: a free daily puzzle from Mint Puzzles</p>`;
+  const snippet = (g) => `<iframe src="https://mintsitestudio.com/embed/${g}" title="${Mint.NAMES[g]}, a free daily puzzle" width="100%" height="640" style="max-width:480px;border:1px solid #dcdcdc;border-radius:12px" loading="lazy" allow="clipboard-write; web-share"></iframe>\n<p>${Mint.NAMES[g]}, a free daily puzzle from <a href="https://mintsitestudio.com/${g}/" rel="nofollow">Mint Puzzles</a></p>`;
   function show() {
     $("pick").innerHTML = GAMES.map((x) => `<button class="${x === g ? "on" : ""}" data-g="${x}">${Mint.NAMES[x]}</button>`).join("");
     $("code").value = snippet(g);

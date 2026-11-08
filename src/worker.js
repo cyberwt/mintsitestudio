@@ -155,12 +155,13 @@ async function dailyPage(request, env, game, date) {
       element: (el) => el.setAttribute("content", `Play ${name}, the free ${GAMES[game]} puzzle for ${when}. No signup, works on phones.`),
     })
     .on('link[rel="canonical"]', { element: (el) => el.setAttribute("href", `https://mintsitestudio.com/${game}/${date}`) })
+    .on('meta[property="og:title"]', { element: (el) => el.setAttribute("content", `${name}, ${when} | Mint Puzzles`) })
     .on("head", { element: (el) => el.append('<meta name="robots" content="noindex, follow">', { html: true }) })
     .transform(page);
 }
 
 // The game page inside someone else's iframe: no index, links open a new tab, a credit
-// link back to the game. Embedding sites paste the snippet from /embed.
+// link back to the game (branded anchor, nofollow: Google treats followed widget links as a link scheme). Embedding sites paste the snippet from /embed.
 async function embedPage(request, env, game) {
   const page = await env.ASSETS.fetch(new Request(new URL(`/${game}/`, request.url), request));
   return new HTMLRewriter()
@@ -170,7 +171,7 @@ async function embedPage(request, env, game) {
     .on("body", {
       element(el) {
         el.setAttribute("class", `${el.getAttribute("class") || ""} embed`.trim());
-        el.append(`<a class="embed-credit" href="https://mintsitestudio.com/${game}/?utm_source=embed">Free daily puzzles at <b>Mint Puzzles</b> ↗</a>`, { html: true });
+        el.append(`<div class="embed-credit">Free daily puzzles at <a href="https://mintsitestudio.com/${game}/?utm_source=embed" rel="nofollow"><b>Mint Puzzles</b> ↗</a></div>`, { html: true });
       },
     })
     .transform(page);
