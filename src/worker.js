@@ -51,7 +51,7 @@ export default {
   },
 
   async fetch(request, env) {
-    return withBeacon(await route(request, env));
+    return withBeacon(await route(request, env), isOwner(request, env));
   },
 };
 
@@ -111,9 +111,22 @@ async function route(request, env) {
 // GA4 off (ga-disable-<id>), which only works if set before gtag("config"), hence the prepend.
 const CF_BEACON = `<script data-cfasync="false">(function(){try{var k="mint_internal",q=new URLSearchParams(location.search).get(k),l=localStorage;if(q==="1")l.setItem(k,"1");else if(q==="0")l.removeItem(k);if(l.getItem(k)!=="1")return}catch(e){return}window["ga-disable-G-Z6MWGC8P1P"]=true;var R=/\\/cdn-cgi\\/rum/,X=XMLHttpRequest.prototype,o=X.open,s=X.send;X.open=function(m,u){this.__noRum=R.test(String(u));return o.apply(this,arguments)};X.send=function(){if(!this.__noRum)return s.apply(this,arguments)};var n=navigator,b=n.sendBeacon;if(b)n.sendBeacon=function(u){return R.test(String(u))||b.apply(n,arguments)};var f=window.fetch;if(f)window.fetch=function(u){return R.test(String(u&&u.url||u))?Promise.resolve(new Response(null,{status:204})):f.apply(this,arguments)}})();</script>`;
 
-function withBeacon(res) {
+// The owner's own connections (secret OWNER_IPS: comma-separated; an entry ending in ":" is an
+// IPv6 prefix) get the browser marked internal automatically, so their visits stay out of GA4
+// and Cloudflare without opening ?mint_internal=1 in each browser. The mark then sticks in that
+// browser off this network too; from an owner IP, ?mint_internal=0 is re-marked on the next page.
+function isOwner(request, env) {
+  const ip = request.headers.get("cf-connecting-ip") || "";
+  return (env.OWNER_IPS || "").split(",").map((s) => s.trim()).filter(Boolean)
+    .some((e) => (e.endsWith(":") ? ip.startsWith(e) : ip === e));
+}
+
+const MARK_INTERNAL = `<script data-cfasync="false">try{localStorage.setItem("mint_internal","1")}catch(e){}</script>`;
+
+function withBeacon(res, owner) {
   if (!(res.headers.get("content-type") || "").includes("text/html")) return res;
-  return new HTMLRewriter().on("head", { element: (el) => el.prepend(CF_BEACON, { html: true }) }).transform(res);
+  const html = owner ? MARK_INTERNAL + CF_BEACON : CF_BEACON;
+  return new HTMLRewriter().on("head", { element: (el) => el.prepend(html, { html: true }) }).transform(res);
 }
 
 // ---- Mint Puzzles ----------------------------------------------------------
