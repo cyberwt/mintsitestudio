@@ -107,12 +107,13 @@ async function route(request, env) {
 // cloudflareinsights.com, and from 2026-10-29 almost nothing was recorded, so we add none.
 // Every HTML page instead gets the internal switch: ?mint_internal=1 marks this browser
 // (localStorage) for our own checks, ?mint_internal=0 clears it, and a marked browser drops
-// the beacon's reports (any request to /cdn-cgi/rum) before they leave the page.
-const CF_BEACON = `<script data-cfasync="false">(function(){try{var k="mint_internal",q=new URLSearchParams(location.search).get(k),l=localStorage;if(q==="1")l.setItem(k,"1");else if(q==="0")l.removeItem(k);if(l.getItem(k)!=="1")return}catch(e){return}var R=/\\/cdn-cgi\\/rum/,X=XMLHttpRequest.prototype,o=X.open,s=X.send;X.open=function(m,u){this.__noRum=R.test(String(u));return o.apply(this,arguments)};X.send=function(){if(!this.__noRum)return s.apply(this,arguments)};var n=navigator,b=n.sendBeacon;if(b)n.sendBeacon=function(u){return R.test(String(u))||b.apply(n,arguments)};var f=window.fetch;if(f)window.fetch=function(u){return R.test(String(u&&u.url||u))?Promise.resolve(new Response(null,{status:204})):f.apply(this,arguments)}})();</script>`;
+// the beacon's reports (any request to /cdn-cgi/rum) before they leave the page. It also turns
+// GA4 off (ga-disable-<id>), which only works if set before gtag("config"), hence the prepend.
+const CF_BEACON = `<script data-cfasync="false">(function(){try{var k="mint_internal",q=new URLSearchParams(location.search).get(k),l=localStorage;if(q==="1")l.setItem(k,"1");else if(q==="0")l.removeItem(k);if(l.getItem(k)!=="1")return}catch(e){return}window["ga-disable-G-Z6MWGC8P1P"]=true;var R=/\\/cdn-cgi\\/rum/,X=XMLHttpRequest.prototype,o=X.open,s=X.send;X.open=function(m,u){this.__noRum=R.test(String(u));return o.apply(this,arguments)};X.send=function(){if(!this.__noRum)return s.apply(this,arguments)};var n=navigator,b=n.sendBeacon;if(b)n.sendBeacon=function(u){return R.test(String(u))||b.apply(n,arguments)};var f=window.fetch;if(f)window.fetch=function(u){return R.test(String(u&&u.url||u))?Promise.resolve(new Response(null,{status:204})):f.apply(this,arguments)}})();</script>`;
 
 function withBeacon(res) {
   if (!(res.headers.get("content-type") || "").includes("text/html")) return res;
-  return new HTMLRewriter().on("head", { element: (el) => el.append(CF_BEACON, { html: true }) }).transform(res);
+  return new HTMLRewriter().on("head", { element: (el) => el.prepend(CF_BEACON, { html: true }) }).transform(res);
 }
 
 // ---- Mint Puzzles ----------------------------------------------------------
