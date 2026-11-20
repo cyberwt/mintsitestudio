@@ -146,6 +146,7 @@ P({
   <div class="stats" id="stats"></div>
   <div class="bar"><i id="barfill" style="width:0"></i></div>
   <div id="q"><noscript><p>Practice needs JavaScript turned on.</p></noscript></div>
+  <div class="callout"><b>Official ETS practice.</b> Real GRE questions are published only by ETS. Take ETS’s free <a href="https://www.ets.org/gre/test-takers/general-test/prepare/powerprep.html" rel="nofollow">POWERPREP practice tests</a> and see its <a href="https://www.ets.org/gre/test-takers/general-test/prepare.html" rel="nofollow">official prep materials</a>. Mint GRE’s questions are original practice, not real test questions.</div>
   <h2>How to use these questions</h2>
   <p>Answer first, then read the explanation even when you got it right: the explanations show the fastest route, which is what saves time on test day. When you miss one, note the reason (a careless slip, a concept you didn’t know, or a trap you fell for) and come back with <b>Missed only</b> a few days later.</p>
   <p>New to the question types? The <a href="/gre/format">GRE format guide</a> explains each one, and the <a href="/gre/math-formulas">math formula sheet</a> covers what Quant expects you to know.</p>
@@ -219,6 +220,7 @@ P({
     <tr><td>Verbal 1 → Verbal 2 (adaptive)</td><td>12 + 15</td><td>18 + 23 min</td></tr>
     <tr><td>Quant 1 → Quant 2 (adaptive)</td><td>12 + 15</td><td>21 + 26 min</td></tr>
   </table></div>
+  <div class="callout"><b>Official ETS practice.</b> Real GRE questions are published only by ETS. Take ETS’s free <a href="https://www.ets.org/gre/test-takers/general-test/prepare/powerprep.html" rel="nofollow">POWERPREP practice tests</a> and see its <a href="https://www.ets.org/gre/test-takers/general-test/prepare.html" rel="nofollow">official prep materials</a>. Mint GRE’s questions are original practice, not real test questions.</div>
   <p class="hint">Find 2 hours without interruptions. Progress is saved in this browser, so a reload won’t lose your answers, but the clock keeps running, just like test day.</p>
   </div>
   <div id="mock"><noscript><p>The mock test needs JavaScript turned on.</p></noscript></div>
