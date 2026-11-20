@@ -39,10 +39,37 @@
 
   const TYPE = { qc: "Quantitative comparison", mc: "Multiple choice", ma: "Select all that apply", ne: "Numeric entry", tc: "Text completion", se: "Sentence equivalence", rc: "Reading comprehension" };
 
+  // pick shapes: one answer -> index (-1 = none); select-all / sentence equivalence -> array;
+  // text completion -> one index per blank; numeric entry -> the typed string.
+  function isMulti(q) { return q.t === "ma" || q.t === "se" || (q.t === "rc" && !!q.multi); }
+  function answered(q, p) {
+    if (p == null) return false;
+    if (q.t === "tc") return p.every((x) => x >= 0);
+    if (q.t === "ne") return !isNaN(parseNum(p));
+    if (isMulti(q)) return q.t === "se" ? p.length === 2 : p.length > 0;
+    return p >= 0;
+  }
+  function grade(q, p) {
+    if (!answered(q, p)) return false;
+    if (q.t === "ne") return Math.abs(parseNum(p) - q.ans) < 1e-9 * Math.max(1, Math.abs(q.ans));
+    if (q.t === "tc") return p.every((x, b) => x === q.ans[b]);
+    if (isMulti(q)) { const w = [].concat(q.ans); return p.length === w.length && p.every((i) => w.includes(i)); }
+    return p === q.ans;
+  }
+  function answerText(q) {
+    return q.t === "ne" ? (q.frac ? fracText(q.ans) : String(q.ans)) :
+      q.t === "tc" ? q.ans.map((a, b) => q.blanks[b][a]).join(", ") :
+      [].concat(q.ans).map((i) => L[i]).join(", ");
+  }
+
+  // opts.mode: "practice" (check button, instant feedback, saves result), "exam" (no feedback;
+  // reports every change through opts.onPick) or "review" (shows opts.initial graded, read-only).
   function render(el, q, opts = {}) {
-    const multi = q.t === "ma" || q.t === "se" || (q.t === "rc" && q.multi);
-    let pick = q.t === "tc" ? q.blanks.map(() => -1) : multi ? new Set() : -1;
-    let done = false;
+    const mode = opts.mode || "practice";
+    const multi = isMulti(q);
+    const blankPick = () => (q.t === "tc" ? q.blanks.map(() => -1) : q.t === "ne" ? "" : multi ? [] : -1);
+    let pick = opts.initial != null ? JSON.parse(JSON.stringify(opts.initial)) : blankPick();
+    let done = mode === "review";
 
     let body = "";
     if (q.p) body += `<div class="passage"><b>Passage: ${esc(q.p.title)}</b>${esc(q.p.text)}</div>`;
@@ -69,65 +96,55 @@
       multi ? "Select every correct answer. No partial credit." :
       q.t === "tc" && q.blanks.length > 1 ? "Choose one word for each blank. Every blank must be right." :
       q.t === "ne" && q.frac ? "Enter a fraction such as 3/8. It doesn't have to be reduced." : "";
+    const actions = mode === "practice"
+      ? `<div class="actions"><button type="button" class="btn p" data-act="check" disabled>Check answer</button>${opts.next ? `<button type="button" class="btn o" data-act="next">${opts.nextLabel || "Next question"}</button>` : ""}</div>` : "";
     el.innerHTML = `<div class="qcard">
       <div class="qmeta"><span>${opts.label || (q.s === "quant" ? "Quant" : "Verbal")} · ${TYPE[q.t]}</span><span>${esc(q.topic)}</span></div>
-      ${body}${hint ? `<p class="hint">${hint}</p>` : ""}
-      <div class="actions"><button type="button" class="btn p" data-act="check" disabled>Check answer</button>${opts.next ? `<button type="button" class="btn o" data-act="next">${opts.nextLabel || "Next question"}</button>` : ""}</div>
+      ${body}${hint ? `<p class="hint">${hint}</p>` : ""}${actions}
       <div class="out"></div></div>`;
 
     const checkBtn = el.querySelector('[data-act="check"]');
     const input = el.querySelector(".ne input");
-    function ready() {
-      return q.t === "tc" ? pick.every((p) => p >= 0) : q.t === "ne" ? !isNaN(parseNum(input.value)) : multi ? (q.t === "se" ? pick.size === 2 : pick.size > 0) : pick >= 0;
-    }
+    if (input) input.value = typeof pick === "string" ? pick : "";
     function paint() {
       el.querySelectorAll(".opt").forEach((b) => {
         const i = +b.dataset.i;
-        const on = q.t === "tc" ? pick[+b.dataset.b] === i : multi ? pick.has(i) : pick === i;
-        b.classList.toggle("on", on);
+        b.classList.toggle("on", q.t === "tc" ? pick[+b.dataset.b] === i : multi ? pick.includes(i) : pick === i);
       });
       if (q.t === "tc") el.querySelectorAll(".blank").forEach((s) => { const b = +s.dataset.b; if (pick[b] >= 0) s.textContent = q.blanks[b][pick[b]]; });
-      checkBtn.disabled = done || !ready();
+      if (checkBtn) checkBtn.disabled = done || !answered(q, pick);
     }
+    function changed() { paint(); if (opts.onPick) opts.onPick(JSON.parse(JSON.stringify(pick))); }
     el.querySelectorAll(".opt").forEach((b) => b.addEventListener("click", () => {
       if (done) return;
       const i = +b.dataset.i;
       if (q.t === "tc") pick[+b.dataset.b] = i;
-      else if (multi) { if (pick.has(i)) pick.delete(i); else if (q.t !== "se" || pick.size < 2) pick.add(i); }
+      else if (multi) { const k = pick.indexOf(i); if (k >= 0) pick.splice(k, 1); else if (q.t !== "se" || pick.length < 2) pick.push(i); }
       else pick = i;
-      paint();
+      changed();
     }));
     if (input) {
-      input.addEventListener("input", paint);
-      input.addEventListener("keydown", (e) => { if (e.key === "Enter" && !checkBtn.disabled) checkBtn.click(); });
+      input.addEventListener("input", () => { pick = input.value; changed(); });
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter" && checkBtn && !checkBtn.disabled) checkBtn.click(); });
     }
-    checkBtn.addEventListener("click", () => {
-      if (done || !ready()) return;
+    function reveal() {
+      const ok = grade(q, pick);
+      if (input) { input.classList.add(ok ? "good" : "bad"); input.disabled = true; }
+      el.querySelectorAll(".opt").forEach((b) => {
+        const i = +b.dataset.i;
+        const right = q.t === "tc" ? q.ans[+b.dataset.b] === i : [].concat(q.ans).includes(i);
+        if (right) b.classList.add("good");
+        else if (b.classList.contains("on")) b.classList.add("bad");
+        b.disabled = true;
+      });
+      const head = ok ? "Correct" : answered(q, pick) ? "Not quite" : "Not answered";
+      el.querySelector(".out").innerHTML = `<div class="verdict ${ok ? "good" : "bad"}"><b class="v">${head}</b>${ok ? "" : `Answer: <b>${answerText(q)}</b>. `}${q.ex}</div>`;
+      return ok;
+    }
+    if (checkBtn) checkBtn.addEventListener("click", () => {
+      if (done || !answered(q, pick)) return;
       done = true;
-      let ok;
-      if (q.t === "ne") {
-        const v = parseNum(input.value);
-        ok = Math.abs(v - q.ans) < 1e-9 * Math.max(1, Math.abs(q.ans));
-        input.classList.add(ok ? "good" : "bad");
-        input.disabled = true;
-      } else {
-        const want = q.t === "tc" ? null : new Set([].concat(q.ans));
-        if (q.t === "tc") ok = pick.every((p, b) => p === q.ans[b]);
-        else if (multi) ok = pick.size === want.size && [...pick].every((i) => want.has(i));
-        else ok = want.has(pick);
-        el.querySelectorAll(".opt").forEach((b) => {
-          const i = +b.dataset.i;
-          const right = q.t === "tc" ? q.ans[+b.dataset.b] === i : want.has(i);
-          const chosen = b.classList.contains("on");
-          if (right) b.classList.add("good");
-          else if (chosen) b.classList.add("bad");
-          b.disabled = true;
-        });
-      }
-      const answer = q.t === "ne" ? (q.frac ? fracText(q.ans) : String(q.ans)) :
-        q.t === "tc" ? q.ans.map((a, b) => q.blanks[b][a]).join(", ") :
-        [].concat(q.ans).map((i) => L[i]).join(", ");
-      el.querySelector(".out").innerHTML = `<div class="verdict ${ok ? "good" : "bad"}"><b class="v">${ok ? "Correct" : "Not quite"}</b>${ok ? "" : `Answer: <b>${answer}</b>. `}${q.ex}</div>`;
+      const ok = reveal();
       checkBtn.disabled = true;
       save(q.id, ok);
       if (opts.onAnswer) opts.onAnswer(ok);
@@ -135,6 +152,7 @@
     const nextBtn = el.querySelector('[data-act="next"]');
     if (nextBtn) nextBtn.addEventListener("click", () => opts.next());
     paint();
+    if (mode === "review") reveal();
   }
 
   function fracText(v) {
@@ -142,5 +160,5 @@
     return String(v);
   }
 
-  window.GRE = { render, load, daily, today, parseNum, TYPE };
+  window.GRE = { render, grade, answered, load, daily, today, parseNum, TYPE };
 })();

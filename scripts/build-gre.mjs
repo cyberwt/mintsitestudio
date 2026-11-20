@@ -16,6 +16,7 @@ if (!TAGS.includes("G-Z6MWGC8P1P")) throw new Error("analytics snippet not found
 
 const NAV = [
   ["/gre/practice/", "Practice"],
+  ["/gre/mock/", "Mock test"],
   ["/gre/vocab/", "Vocab"],
   ["/gre/format", "Format"],
   ["/gre/scoring", "Scores"],
@@ -50,7 +51,7 @@ ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(json
 ${body}
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo gre" href="/"><i></i>Mint GRE</a><p>Free GRE prep: original practice questions with full explanations, a daily question, vocab flashcards and study guides.</p><p class="disclaim">GRE® is a registered trademark of ETS. Mint GRE is not affiliated with or endorsed by ETS.</p></div>
-  <div class="fcol"><b>GRE prep</b><a href="/gre/practice/">Practice questions</a><a href="/gre/practice/?s=quant">Quant practice</a><a href="/gre/practice/?s=verbal">Verbal practice</a><a href="/gre/vocab/">Vocabulary</a><a href="/gre/format">Test format</a><a href="/gre/scoring">Scoring</a><a href="/gre/study-plan">Study plan</a><a href="/gre/math-formulas">Math formulas</a></div>
+  <div class="fcol"><b>GRE prep</b><a href="/gre/practice/">Practice questions</a><a href="/gre/mock/">Full mock test</a><a href="/gre/practice/?s=quant">Quant practice</a><a href="/gre/practice/?s=verbal">Verbal practice</a><a href="/gre/vocab/">Vocabulary</a><a href="/gre/format">Test format</a><a href="/gre/scoring">Scoring</a><a href="/gre/study-plan">Study plan</a><a href="/gre/math-formulas">Math formulas</a></div>
   <div class="fcol"><b>More</b><a href="/puzzles/">Mint Puzzles</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 ${scripts}</body>
@@ -62,6 +63,8 @@ ${scripts}</body>
   return url;
 }
 
+const BANK = (() => { const w = {}; new Function("window", fs.readFileSync(path.join(pub, "assets/gre-bank.js"), "utf8"))(w); return w.GRE_BANK; })();
+const NQ = BANK.filter((q) => q.s === "quant").length, NV = BANK.filter((q) => q.s === "verbal").length;
 const built = [];
 const P = (o) => built.push(page(o));
 
@@ -76,7 +79,7 @@ P({
     <p class="kicker">Free GRE prep, no account</p>
     <h1>Practice for the GRE, a question at a time.</h1>
     <p class="sub">Original Quant and Verbal questions in every GRE format, each with a full explanation. Plus a daily question, vocabulary flashcards and plain-English guides to the current test.</p>
-    <p class="go"><a class="btn p" href="/gre/practice/">Start practicing</a><a class="btn o" href="#daily">Today’s question</a></p>
+    <p class="go"><a class="btn p" href="/gre/practice/">Start practicing</a><a class="btn o" href="/gre/mock/">Take a full mock test</a></p>
   </section>
 
   <div class="gsec" id="daily"><h2>Today’s GRE question</h2><span id="dday"></span></div>
@@ -84,10 +87,13 @@ P({
 
   <div class="gsec"><h2>Practice by section</h2><span id="prog">Your progress is saved in this browser</span></div>
   <section class="tiles">
-    <a class="tile" href="/gre/practice/?s=quant"><b>Quantitative Reasoning</b><span>Quantitative comparison, multiple choice, select-all and numeric entry. Arithmetic, algebra, geometry and data.</span><em id="pq">36 questions</em></a>
-    <a class="tile" href="/gre/practice/?s=verbal"><b>Verbal Reasoning</b><span>Text completion, sentence equivalence and reading comprehension, with the logic of every answer explained.</span><em id="pv">24 questions</em></a>
+    <a class="tile" href="/gre/practice/?s=quant"><b>Quantitative Reasoning</b><span>Quantitative comparison, multiple choice, select-all and numeric entry. Arithmetic, algebra, geometry and data.</span><em id="pq">${NQ} questions</em></a>
+    <a class="tile" href="/gre/practice/?s=verbal"><b>Verbal Reasoning</b><span>Text completion, sentence equivalence and reading comprehension, with the logic of every answer explained.</span><em id="pv">${NV} questions</em></a>
     <a class="tile" href="/gre/vocab/"><b>GRE vocabulary</b><span>120 high-frequency words with short definitions and example sentences. Flip through them as flashcards.</span><em>120 words</em></a>
   </section>
+
+  <div class="gsec"><h2>Full-length mock test</h2><span>1 hr 58 min, timed like test day</span></div>
+  <section class="tiles"><a class="tile" href="/gre/mock/" style="grid-column:1/-1"><b>GRE Mock Test 1</b><span>An Issue essay plus two Verbal and two Quant sections on the real clock. Your second section of each measure adapts to how the first went, then every question is reviewed with its explanation and you get an estimated 130–170 score.</span><em>Start the mock test</em></a></section>
 
   <div class="gsec"><h2>The GRE at a glance</h2><span>Current shorter test, since September 2023</span></div>
   <section class="facts">
@@ -194,6 +200,32 @@ P({
   show();
 })();
 </script>
+`,
+});
+
+// ---------------------------------------------------------------- mock test
+P({
+  file: "gre/mock/index.html", url: "/gre/mock/",
+  title: "Free Full-Length GRE Mock Test (Timed, Adaptive) | Mint GRE",
+  desc: "Take a free full-length GRE mock test: Issue essay, two Verbal and two Quant sections on the real 1 hr 58 min clock, an adaptive second section, an estimated 130–170 score and explanations for every question.",
+  body: `<main class="wrap prose">
+  <div class="mock-intro">
+  <p class="kick"><a href="/">Mint GRE</a> · Mock test</p>
+  <h1>Free full-length GRE mock test</h1>
+  <p class="lede">Timed and structured like the current GRE: one Issue essay, then two Verbal and two Quant sections. Inside a section you can skip, mark and come back to questions; once you end a section, it’s closed.</p>
+  <div class="tablewrap"><table class="t">
+    <tr><th>Section</th><th>Questions</th><th>Time</th></tr>
+    <tr><td>Analytical Writing (Issue)</td><td>1 essay</td><td>30 min</td></tr>
+    <tr><td>Verbal 1 → Verbal 2 (adaptive)</td><td>12 + 15</td><td>18 + 23 min</td></tr>
+    <tr><td>Quant 1 → Quant 2 (adaptive)</td><td>12 + 15</td><td>21 + 26 min</td></tr>
+  </table></div>
+  <p class="hint">Find 2 hours without interruptions. Progress is saved in this browser, so a reload won’t lose your answers, but the clock keeps running, just like test day.</p>
+  </div>
+  <div id="mock"><noscript><p>The mock test needs JavaScript turned on.</p></noscript></div>
+</main>`,
+  scripts: `<script src="/assets/gre-bank.js"></script>
+<script src="/assets/gre.js"></script>
+<script src="/assets/gre-mock.js"></script>
 `,
 });
 
