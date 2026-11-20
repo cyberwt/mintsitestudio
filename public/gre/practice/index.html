@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free GRE Practice Questions with Explanations | Mint GRE</title>
+<meta name="description" content="Free GRE practice questions for Quantitative and Verbal Reasoning in every question format: quantitative comparison, numeric entry, text completion, sentence equivalence and reading comprehension. Every answer explained.">
+<link rel="canonical" href="https://mintsitestudio.com/gre/practice/">
+<meta property="og:type" content="website"><meta property="og:title" content="Free GRE Practice Questions with Explanations | Mint GRE"><meta property="og:description" content="Free GRE practice questions for Quantitative and Verbal Reasoning in every question format: quantitative comparison, numeric entry, text completion, sentence equivalence and reading comprehension. Every answer explained."><meta property="og:url" content="https://mintsitestudio.com/gre/practice/">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/mint.css">
+<link rel="stylesheet" href="/assets/gre.css">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
+<!-- Grow by Mediavine (Journey prerequisite; live host only) -->
+<script data-grow-initializer="">if(location.hostname==="mintsitestudio.com")!(function(){window.growMe||((window.growMe=function(e){window.growMe._.push(e);}),(window.growMe._=[]));var e=document.createElement("script");(e.type="text/javascript"),(e.src="https://faves.grow.me/main.js"),(e.defer=!0),e.setAttribute("data-grow-faves-site-id","U2l0ZTphMzgwYzBhYS0zNGFmLTRjN2EtYTFmZS1jNzhlMzg3YWNmMWE=");var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t);})();</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo gre" href="/"><i></i>Mint GRE</a>
+  <nav class="nav"><a href="/gre/practice/" class="on">Practice</a><a href="/gre/vocab/">Vocab</a><a href="/gre/format">Format</a><a href="/gre/scoring">Scores</a><a href="/gre/study-plan">Study plan</a><a href="/gre/math-formulas">Math</a><a href="/puzzles/">Puzzles</a></nav>
+</div></header>
+<main class="wrap prose">
+  <p class="kick"><a href="/">Mint GRE</a> · Practice</p>
+  <h1>GRE practice questions</h1>
+  <p class="lede">Original questions in every GRE format, graded the way the test grades them: all parts right or no credit. Your results stay in this browser.</p>
+  <div class="chips" id="sec"><button class="chip" data-s="all">All</button><button class="chip" data-s="quant">Quant</button><button class="chip" data-s="verbal">Verbal</button></div>
+  <div class="chips" id="typ"></div>
+  <div class="chips" id="mode"><button class="chip" data-m="order">In order</button><button class="chip" data-m="new">Unanswered first</button><button class="chip" data-m="missed">Missed only</button></div>
+  <div class="stats" id="stats"></div>
+  <div class="bar"><i id="barfill" style="width:0"></i></div>
+  <div id="q"><noscript><p>Practice needs JavaScript turned on.</p></noscript></div>
+  <h2>How to use these questions</h2>
+  <p>Answer first, then read the explanation even when you got it right: the explanations show the fastest route, which is what saves time on test day. When you miss one, note the reason (a careless slip, a concept you didn’t know, or a trap you fell for) and come back with <b>Missed only</b> a few days later.</p>
+  <p>New to the question types? The <a href="/gre/format">GRE format guide</a> explains each one, and the <a href="/gre/math-formulas">math formula sheet</a> covers what Quant expects you to know.</p>
+</main>
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo gre" href="/"><i></i>Mint GRE</a><p>Free GRE prep: original practice questions with full explanations, a daily question, vocab flashcards and study guides.</p><p class="disclaim">GRE® is a registered trademark of ETS. Mint GRE is not affiliated with or endorsed by ETS.</p></div>
+  <div class="fcol"><b>GRE prep</b><a href="/gre/practice/">Practice questions</a><a href="/gre/practice/?s=quant">Quant practice</a><a href="/gre/practice/?s=verbal">Verbal practice</a><a href="/gre/vocab/">Vocabulary</a><a href="/gre/format">Test format</a><a href="/gre/scoring">Scoring</a><a href="/gre/study-plan">Study plan</a><a href="/gre/math-formulas">Math formulas</a></div>
+  <div class="fcol"><b>More</b><a href="/puzzles/">Mint Puzzles</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
+</div></footer>
+<script src="/assets/gre-bank.js"></script>
+<script src="/assets/gre.js"></script>
+<script>
+(() => {
+  const qs = new URLSearchParams(location.search);
+  const st = { s: ["quant", "verbal"].includes(qs.get("s")) ? qs.get("s") : "all", t: "all", m: "new", i: 0 };
+  const $ = (id) => document.getElementById(id);
+  const TYPES = { quant: ["qc", "mc", "ma", "ne"], verbal: ["tc", "se", "rc"] };
+  function list() {
+    const done = GRE.load();
+    let l = GRE_BANK.filter((q) => (st.s === "all" || q.s === st.s) && (st.t === "all" || q.t === st.t));
+    if (st.m === "missed") l = l.filter((q) => done[q.id] && !done[q.id].ok);
+    if (st.m === "new") l = l.filter((q) => !done[q.id]).concat(l.filter((q) => done[q.id]));
+    return l;
+  }
+  function chips() {
+    const types = st.s === "all" ? [] : TYPES[st.s];
+    $("typ").innerHTML = types.length ? ['<button class="chip" data-t="all">All types</button>'].concat(types.map((t) => '<button class="chip" data-t="' + t + '">' + GRE.TYPE[t] + '</button>')).join("") : "";
+    document.querySelectorAll("[data-s]").forEach((b) => b.classList.toggle("on", b.dataset.s === st.s));
+    document.querySelectorAll("[data-t]").forEach((b) => b.classList.toggle("on", b.dataset.t === st.t));
+    document.querySelectorAll("[data-m]").forEach((b) => b.classList.toggle("on", b.dataset.m === st.m));
+    $("typ").querySelectorAll("[data-t]").forEach((b) => b.onclick = () => { st.t = b.dataset.t; st.i = 0; show(); });
+  }
+  function stats() {
+    const done = GRE.load();
+    const pool = GRE_BANK.filter((q) => st.s === "all" || q.s === st.s);
+    const a = pool.filter((q) => done[q.id]), ok = a.filter((q) => done[q.id].ok);
+    $("stats").innerHTML = "<span><b>" + a.length + "</b> of " + pool.length + " answered</span><span><b>" + ok.length + "</b> correct" + (a.length ? " (" + Math.round(100 * ok.length / a.length) + "%)" : "") + "</span>";
+    $("barfill").style.width = (pool.length ? 100 * a.length / pool.length : 0) + "%";
+  }
+  function show() {
+    chips(); stats();
+    const l = list();
+    if (!l.length) {
+      $("q").innerHTML = '<div class="qcard"><p class="stem">' + (st.m === "missed" ? "Nothing missed here. Nice work." : "No questions match.") + '</p><div class="actions"><button class="btn o" id="reset">Show all</button></div></div>';
+      $("reset").onclick = () => { st.m = "order"; st.t = "all"; st.i = 0; show(); };
+      return;
+    }
+    const q = l[st.i % l.length];
+    GRE.render($("q"), q, {
+      label: "Question " + ((st.i % l.length) + 1) + " of " + l.length,
+      next: () => { st.i++; if (st.m !== "order") st.i = st.i % Math.max(1, list().length); show(); window.scrollTo({ top: $("q").offsetTop - 70, behavior: "smooth" }); },
+      onAnswer: (ok) => { stats(); if (st.m === "new" || (st.m === "missed" && ok)) st.i--; },
+    });
+  }
+  document.querySelectorAll("[data-s]").forEach((b) => b.onclick = () => { st.s = b.dataset.s; st.t = "all"; st.i = 0; history.replaceState(null, "", st.s === "all" ? location.pathname : "?s=" + st.s); show(); });
+  document.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => { st.m = b.dataset.m; st.i = 0; show(); });
+  show();
+})();
+</script>
+</body>
+</html>

@@ -1,5 +1,8 @@
 // Mint Site Studio Worker.
-//   mintsitestudio.com          -> Mint Puzzles (daily games, public/index.html + /word /hive /box /sum /sudoku /nonogram)
+//   mintsitestudio.com          -> Mint GRE prep at / and /gre/* (built by scripts/build-gre.mjs), and
+//                                  Mint Puzzles at /puzzles/ + /word /hive /box /sum /sudoku /nonogram
+//                                  (the game pages stay byte-for-byte what the iPhone app bundles; on the
+//                                  web their "home" links are rewritten here from / to /puzzles/)
 //                                  /<game>/YYYY-MM-DD serves that game's page for a past day; /creators -> seller.
 //                                  /embed/<game> is the game page made for an iframe on someone else's site.
 //                                  Once the iPhone app is live, every page gets the App Store banner tag.
@@ -23,7 +26,8 @@ const GAMES = {
   sudoku: "Mini Sudoku",
   nonogram: "Mint Nonogram",
 };
-const SITE_PAGES = ["/", "/archive", "/how-to", "/embed", "/about", "/privacy"];
+const SITE_PAGES = ["/", "/archive", "/how-to", "/embed", "/about", "/privacy", "/puzzles/"];
+const GRE_PAGES = ["/gre/practice/", "/gre/vocab/", "/gre/format", "/gre/scoring", "/gre/study-plan", "/gre/math-formulas"];
 const HOW_TO = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
 // Mint Puzzles on the App Store (ASC app 6826092706). The banner tag goes out only once
 // the iTunes lookup API returns it, i.e. after Apple approves and releases the app.
@@ -83,10 +87,12 @@ async function route(request, env) {
     }
     if (url.pathname === "/sitemap.xml") return sitemap();
     const m = url.pathname.match(/^\/(word|hive|box|sum|sudoku|nonogram)\/(\d{4}-\d{2}-\d{2})\/?$/);
-    if (m) return withAppBanner(await dailyPage(request, env, m[1], m[2]));
+    if (m) return withAppBanner(puzzleHome(await dailyPage(request, env, m[1], m[2])));
     const e = url.pathname.match(/^\/embed\/(word|hive|box|sum|sudoku|nonogram)\/?$/);
     if (e) return embedPage(request, env, e[1]);
-    return withAppBanner(await env.ASSETS.fetch(request));
+    if (/^\/(word|hive|box|sum|sudoku|nonogram)\/?$/.test(url.pathname)) return withAppBanner(puzzleHome(await env.ASSETS.fetch(request)));
+    const res = await env.ASSETS.fetch(request);
+    return /^\/(puzzles|archive|how-to|embed)\b/.test(url.pathname) ? withAppBanner(res) : res;
   }
 
   if (url.pathname === "/api/draft") {
@@ -191,6 +197,18 @@ async function embedPage(request, env, game) {
     .transform(page);
 }
 
+// The game pages link "home" to "/", which the iPhone app catches to close the game. On the
+// website, home for a game is the puzzle hub, so rewrite those links (and the ones mint.js
+// draws later, like the welcome screen's "All puzzles") to /puzzles/.
+const PUZZLE_HOME_JS = `<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest('a[href="/"]');if(a){e.preventDefault();location.href="/puzzles/"}},true)</script>`;
+function puzzleHome(res) {
+  if (!(res.headers.get("content-type") || "").includes("text/html")) return res;
+  return new HTMLRewriter()
+    .on('a[href="/"]', { element: (el) => el.setAttribute("href", "/puzzles/") })
+    .on("head", { element: (el) => el.append(PUZZLE_HOME_JS, { html: true }) })
+    .transform(res);
+}
+
 // Is the app on the App Store yet? Asks Apple's public lookup API, cached for 6 hours
 // at the edge and for the life of this isolate once it says yes.
 let appLiveSeen = false;
@@ -215,7 +233,7 @@ async function withAppBanner(res) {
 }
 
 function sitemap() {
-  const urls = SITE_PAGES.map((p) => `https://mintsitestudio.com${p}`);
+  const urls = SITE_PAGES.concat(GRE_PAGES).map((p) => `https://mintsitestudio.com${p}`);
   for (const g of HOW_TO) urls.push(`https://mintsitestudio.com/how-to/${g}`);
   for (const g of Object.keys(GAMES)) urls.push(`https://mintsitestudio.com/${g}/`);
   const body = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${u}</loc></url>`).join("\n")}\n</urlset>\n`;

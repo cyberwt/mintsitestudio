@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mint Puzzles: free daily word, number and logic puzzles</title>
+<meta name="description" content="Six new free puzzles every day: Mint Word, Mint Hive, Mint Box, Mint Sum, Mini Sudoku and Mint Nonogram. Every puzzle and the whole archive are free. No subscription, no account.">
+<link rel="canonical" href="https://mintsitestudio.com/puzzles/">
+<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;600;700;800&family=Zilla+Slab:wght@400;700&display=swap">
+<link rel="stylesheet" href="/assets/mint.css">
+<style>
+  /* Front page: a newspaper dateline, one lead game + two, then the reader's week. */
+  .front{max-width:1040px}
+  .dateline{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0 12px;border-bottom:1px solid var(--line);font-size:12.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .dateline b{color:var(--ink)}
+  .hero{text-align:center;padding:40px 0 30px;border-bottom:3px double var(--ink)}
+  .hero .kicker{font:400 clamp(19px,4.4vw,24px)/1.2 var(--slab);color:var(--muted);margin:0 0 6px}
+  .hero h1{font-size:clamp(40px,9.5vw,68px);line-height:1;margin:0 0 14px;letter-spacing:-.02em}
+  .hero .sub{font-size:17.5px;max-width:540px;margin:0 auto;color:var(--muted)}
+  .hero .go{margin:22px 0 0}
+
+  .sec{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 12px;margin:38px 0 16px}
+  .sec h2{margin:0;font-size:26px}
+  .sec span{font-size:13.5px;color:var(--muted)}
+
+  /* Lead + two: the lead game rotates daily so the page changes every morning. */
+  .games{display:grid;grid-template-columns:1.32fr 1fr;grid-template-rows:auto auto;gap:18px}
+  .gcard{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card);display:flex;flex-direction:column;text-decoration:none;color:var(--ink);transition:transform .15s ease,box-shadow .15s ease}
+  .gcard:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.1)}
+  .gcard:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+  .gcard .art{background:var(--c);display:grid;place-items:center;position:relative;padding:22px;min-height:150px}
+  .gcard .art svg.prev{width:100%;max-width:220px;height:auto;display:block;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+  .gcard .body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .gcard .title{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .gcard .title .icon{width:30px;height:30px;flex:none}
+  .gcard h3{font:700 24px/1.1 var(--slab);margin:0}
+  .gcard p{margin:0 0 14px;color:var(--muted);font-size:14.5px;flex:1}
+  .gcard .meta{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .gcard .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px}
+  .gcard .btn.p{min-width:0;padding:11px 26px;font-size:14px}
+  .gcard .btn{white-space:nowrap}
+  .gcard .btn.o{padding:9.5px 20px;font-size:14px}
+  .badge{position:absolute;top:12px;left:12px;background:#121212;color:#fff;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border-radius:999px}
+  .badge.new{background:#fff;color:#121212;box-shadow:0 0 0 1.5px #121212 inset}
+  .gcard.lead{grid-row:1 / span 2}
+  .gcard.lead .art{flex:1;min-height:300px;padding:34px}
+  .gcard.lead .art svg.prev{max-width:330px}
+  .gcard.lead h3{font-size:34px}
+  .gcard.lead .title .icon{width:40px;height:40px}
+  .gcard.lead p{font-size:16px}
+  .gcard:not(.lead){flex-direction:row}
+  .gcard:not(.lead) .art{width:44%;flex:none}
+  @media (max-width:760px){
+    .games{grid-template-columns:1fr;gap:14px}
+    .gcard.lead{grid-row:auto}
+    .gcard.lead .art{min-height:230px}
+    .gcard.lead h3{font-size:30px}
+  }
+  @media (max-width:480px){
+    .gcard:not(.lead) .art{width:38%;padding:14px;min-height:0}
+    .gcard:not(.lead) .body{padding:14px}
+    .gcard:not(.lead) p{display:none}
+    .gcard:not(.lead) h3{font-size:21px}
+    .gcard:not(.lead) .foot .meta{display:none}
+    .gcard:not(.lead) .badge{display:none}
+    .gcard:not(.lead) .btn.o{padding:9px 16px}
+    .dateline .hide-s{display:none}
+  }
+
+  /* The other three games: a row of three upright cards under the lead + two. */
+  .games3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+  .games3 .gcard:not(.lead){flex-direction:column}
+  .games3 .gcard:not(.lead) .art{width:auto;min-height:150px}
+  .games3 .gcard .art svg.prev{max-width:170px}
+  @media (max-width:760px){
+    .games3{grid-template-columns:1fr;gap:14px;margin-top:14px}
+    .games3 .gcard:not(.lead){flex-direction:row}
+    .games3 .gcard:not(.lead) .art{width:44%;min-height:0}
+  }
+  @media (max-width:480px){.games3 .gcard:not(.lead) .art{width:38%}}
+  /* Your week: one row per game, Mon to Sun, plus the streak. */
+  .week{border:1px solid var(--line);border-radius:14px;padding:6px 18px;background:var(--card)}
+  .wrow{display:grid;grid-template-columns:minmax(120px,1fr) repeat(7,minmax(26px,38px)) 74px;align-items:center;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+  .wrow:first-child{border-top:0;padding:10px 0 4px}
+  .wrow.head span{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:center}
+  .wrow .g{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px;text-decoration:none;color:var(--ink);min-width:0}
+  .wrow .g .icon{width:24px;height:24px;flex:none}
+  .wrow .g span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sq{aspect-ratio:1;border-radius:6px;background:var(--soft);display:block}
+  .sq.solved{background:var(--c);box-shadow:0 0 0 1.5px var(--ink) inset}
+  .sq.played{background:transparent;box-shadow:0 0 0 1.5px var(--ink) inset}
+  .sq.future{background:transparent;box-shadow:0 0 0 1px var(--line) inset}
+  .sq.today{outline:2px solid var(--ink);outline-offset:2px}
+  a.sq{text-decoration:none}
+  .wrow .stk{text-align:right;font:700 22px/1 var(--sans);font-variant-numeric:tabular-nums}
+  .wrow .stk small{display:block;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+  .note{font-size:13px;color:var(--muted);margin:10px 2px 0}
+  @media (max-width:560px){
+    .week{padding:4px 12px}
+    .wrow{grid-template-columns:1fr repeat(7,minmax(18px,1fr)) 46px;gap:5px}
+    .wrow .g span{display:none}
+    .wrow .g .icon{width:28px;height:28px}
+    .wrow .stk{font-size:18px}
+    .wrow .stk small{font-size:9px}
+  }
+
+  /* Archive: newest first, a row of dated tiles per game. */
+  .arch{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--ink)}
+  .arch > div{padding:14px 18px 6px;border-left:1px solid var(--line)}
+  .arch > div:nth-child(3n+1){border-left:0;padding-left:0}
+  .arch > div:nth-child(n+4){border-top:1px solid var(--line);margin-top:6px}
+  .arch h3{font:700 18px/1.2 var(--slab);margin:0 0 10px;display:flex;align-items:center;gap:8px}
+  .arch h3 .icon{width:22px;height:22px}
+  .arch ul{list-style:none;margin:0;padding:0}
+  .arch li a{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);text-decoration:none;font-size:14.5px}
+  .arch li a:hover b{text-decoration:underline}
+  .arch li a span{color:var(--muted);font-variant-numeric:tabular-nums}
+  .arch .all{display:inline-block;margin:10px 0 0;font-size:13.5px;font-weight:700}
+  @media (max-width:640px){.arch{grid-template-columns:1fr}.arch > div{border-left:0;padding-left:0;padding-right:0}.arch > div:nth-child(n+2){border-top:1px solid var(--line);margin-top:6px}}
+
+  /* Free means free: three newspaper columns with hairline rules. */
+  .free{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink)}
+  .free div{padding:16px 20px 4px;border-left:1px solid var(--line)}
+  .free div:first-child{border-left:0;padding-left:0}
+  .free b{display:block;font:700 20px/1.2 var(--slab);margin-bottom:6px}
+  .free span{color:var(--muted);font-size:15px}
+  @media (max-width:640px){.free{grid-template-columns:1fr}.free div{border-left:0;padding:14px 0 0}}
+</style>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6MWGC8P1P"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-Z6MWGC8P1P");</script>
+<!-- Grow by Mediavine (Journey prerequisite; live host only) -->
+<script data-grow-initializer="">if(location.hostname==="mintsitestudio.com")!(function(){window.growMe||((window.growMe=function(e){window.growMe._.push(e);}),(window.growMe._=[]));var e=document.createElement("script");(e.type="text/javascript"),(e.src="https://faves.grow.me/main.js"),(e.defer=!0),e.setAttribute("data-grow-faves-site-id","U2l0ZTphMzgwYzBhYS0zNGFmLTRjN2EtYTFmZS1jNzhlMzg3YWNmMWE=");var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t);})();</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="logo" href="/puzzles/"><i></i>Mint Puzzles</a>
+  <nav class="nav"><a href="/word/"><em style="--c:var(--word)"></em>Word</a><a href="/hive/"><em style="--c:var(--hive)"></em>Hive</a><a href="/box/"><em style="--c:var(--box)"></em>Box</a><a href="/sum/"><em style="--c:var(--sum)"></em>Sum</a><a href="/sudoku/"><em style="--c:var(--sudoku)"></em>Sudoku</a><a href="/nonogram/"><em style="--c:var(--nonogram)"></em>Nonogram</a></nav>
+</div></header>
+
+<main class="wrap front">
+  <div class="dateline"><b id="dl-date"></b><span><span class="hide-s">Six new puzzles · </span><span id="dl-no"></span></span></div>
+
+  <section class="hero">
+    <p class="kicker" id="greet">Good day.</p>
+    <h1>Daily puzzles. Always free.</h1>
+    <p class="sub">Six new games every morning, and every past puzzle in the archive. No subscription, no account, no paywall.</p>
+    <p class="go"><a class="btn p" id="hero-cta" href="/word/">Play today’s puzzles</a></p>
+  </section>
+
+  <div class="sec"><h2>Today’s puzzles</h2><span id="done-count"></span></div>
+  <section class="games" id="games"></section>
+  <section class="games3" id="games2"></section>
+
+  <div class="sec"><h2>Your week</h2><span>Solved days fill in</span></div>
+  <section class="week" id="week"></section>
+  <p class="note">Your streaks are saved in this browser only. No account, nothing to sign up for.</p>
+
+  <div class="sec"><h2>From the archive</h2><span>Every past puzzle stays free</span></div>
+  <section class="arch" id="arch"></section>
+
+  <div class="sec"><h2>Free means free</h2></div>
+  <section class="free">
+    <div><b>Every puzzle</b><span>Today’s games are free to play, start to finish. No “subscribe to keep playing.”</span></div>
+    <div><b>The whole archive</b><span>Missed a day? Every past puzzle stays free under each game.</span></div>
+    <div><b>No account</b><span>Just open the page and play. Streaks are saved in your browser.</span></div>
+  </section>
+</main>
+
+<footer><div class="wrap">
+  <div class="fbrand"><a class="logo" href="/puzzles/"><i></i>Mint Puzzles</a><p>Original daily puzzles, made fresh every morning. Free forever.</p></div>
+  <div class="fcol"><b>Games</b><a href="/word/">Mint Word</a><a href="/hive/">Mint Hive</a><a href="/box/">Mint Box</a><a href="/sum/">Mint Sum</a><a href="/sudoku/">Mini Sudoku</a><a href="/nonogram/">Mint Nonogram</a></div>
+  <div class="fcol"><b>About</b><a href="/archive">Archive</a><a href="/how-to">How-to guides</a><a href="/embed">Embed a puzzle</a><a href="/about">About</a><a href="/privacy">Privacy</a><a href="/">Mint GRE prep</a><span>© Mint Site Studio</span></div>
+</div></footer>
+<script src="/assets/words-v1.js"></script>
+<script src="/assets/mint.js"></script>
+<script>
+(() => {
+  const t = Mint.today(), no = Mint.puzzleNumber(t);
+  const $ = (id) => document.getElementById(id);
+  const GAMES = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
+  const COLOR = Object.fromEntries(GAMES.map((g) => [g, `var(--${g})`]));
+  const BLURB = {
+    word: "Guess the hidden five-letter word in six tries. Teal is right, orange is close.",
+    hive: "Make words from seven letters, always using the middle one. Find the pangram.",
+    box: "Twelve letters around a square. Chain words that use them all, in as few as you can.",
+    sum: "Combine six numbers with + − × ÷ to hit the target. Three rounds, easy to hard.",
+    sudoku: "A 6×6 sudoku you can finish over coffee. One solution, no guessing.",
+    nonogram: "Use the number clues to fill in a 10×10 grid and reveal today’s picture.",
+  };
+  const META = { word: "6 tries · about 3 min", hive: "7 letters · play at your pace", box: "12 letters · about 8 min", sum: "3 rounds · about 5 min", sudoku: "6×6 · about 6 min", nonogram: "10×10 · about 10 min" };
+
+  const [y, m, d] = t.split("-").map(Number);
+  const weekday = new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { timeZone: "UTC", weekday: "long" });
+  $("dl-date").textContent = `${weekday}, ${Mint.prettyDate(t)}`;
+  $("dl-no").textContent = `No. ${no}`;
+  const h = new Date().getHours();
+  $("greet").textContent = h < 5 ? "Up late?" : h < 12 ? "Good morning." : h < 18 ? "Good afternoon." : "Good evening.";
+
+  // ---- Card art: a preview of today's real puzzle ------------------------
+  const INK = "#121212", W = "#fff";
+  function sumArt() {
+    const p = Mint.sumPuzzle(t)[0];
+    const tiles = p.nums.map((v, i) => {
+      const cx = 30 + i * 32;
+      return `<circle cx="${cx}" cy="122" r="13" fill="${W}" stroke="${INK}" stroke-width="2"/><text x="${cx}" y="127" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="700" font-size="13" fill="${INK}">${v}</text>`;
+    }).join("");
+    return `<svg class="prev" viewBox="0 0 220 150" aria-hidden="true">
+      <rect x="45" y="12" width="130" height="80" rx="12" fill="${W}" stroke="${INK}" stroke-width="2.5"/>
+      <text x="110" y="32" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="800" font-size="9" letter-spacing="1.5" fill="#5f6368">TARGET</text>
+      <text x="110" y="78" text-anchor="middle" font-family="Zilla Slab,Georgia,serif" font-weight="700" font-size="44" fill="${INK}">${p.target}</text>
+      ${tiles}</svg>`;
+  }
+  function sudokuArt(solved) {
+    const { grid, solution } = Mint.sudokuPuzzle(t);
+    const s = 30, o = 20;
+    let cells = "";
+    for (let i = 0; i < 36; i++) {
+      const r = Math.floor(i / 6), c = i % 6, v = grid[i] || (solved ? solution[i] : 0);
+      const fill = grid[i] ? "#fdf1d2" : W;
+      cells += `<rect x="${o + c * s}" y="${o + r * s}" width="${s}" height="${s}" fill="${fill}" stroke="#bdbdbd" stroke-width="1"/>`;
+      if (v) cells += `<text x="${o + c * s + s / 2}" y="${o + r * s + s / 2 + 6}" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="${grid[i] ? 700 : 400}" font-size="17" fill="${grid[i] ? INK : "#2a6ad1"}">${v}</text>`;
+    }
+    const lines = [2, 4].map((r) => `<line x1="${o}" x2="${o + 180}" y1="${o + r * s}" y2="${o + r * s}" stroke="${INK}" stroke-width="2.5"/>`).join("")
+      + `<line x1="${o + 90}" x2="${o + 90}" y1="${o}" y2="${o + 180}" stroke="${INK}" stroke-width="2.5"/>`;
+    return `<svg class="prev" viewBox="0 0 220 220" aria-hidden="true">${cells}${lines}<rect x="${o}" y="${o}" width="180" height="180" rx="3" fill="none" stroke="${INK}" stroke-width="3"/></svg>`;
+  }
+  function nonoArt(solved) {
+    // Clues on the edges; the picture itself only appears once you've solved it.
+    const p = Mint.nonogramPuzzle(t), n = p.n, s = 15, ox = 62, oy = 62;
+    let out = "";
+    p.colClues.forEach((cl, c) => cl.slice(-4).forEach((v, k, a) => {
+      out += `<text x="${ox + c * s + s / 2}" y="${oy - 6 - (a.length - 1 - k) * 13}" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="700" font-size="10" fill="${INK}">${v}</text>`;
+    }));
+    p.rowClues.forEach((cl, r) => {
+      out += `<text x="${ox - 6}" y="${oy + r * s + s / 2 + 4}" text-anchor="end" font-family="Libre Franklin,Arial,sans-serif" font-weight="700" font-size="10" fill="${INK}" letter-spacing="1">${cl.slice(-4).join(" ")}</text>`;
+    });
+    for (let i = 0; i < n * n; i++) {
+      const r = Math.floor(i / n), c = i % n, on = solved && p.solution[i];
+      out += `<rect x="${ox + c * s}" y="${oy + r * s}" width="${s}" height="${s}" fill="${on ? INK : W}" stroke="#c9c9c9" stroke-width=".8"/>`;
+    }
+    out += `<line x1="${ox + 75}" x2="${ox + 75}" y1="${oy}" y2="${oy + 150}" stroke="${INK}" stroke-width="1.5"/><line x1="${ox}" x2="${ox + 150}" y1="${oy + 75}" y2="${oy + 75}" stroke="${INK}" stroke-width="1.5"/>`;
+    return `<svg class="prev" viewBox="0 0 220 220" aria-hidden="true">${out}<rect x="${ox}" y="${oy}" width="150" height="150" fill="none" stroke="${INK}" stroke-width="2.5"/></svg>`;
+  }
+  function wordArt() {
+    // Your own colors once played; a sample row otherwise. Never the answer.
+    const r = Mint.result("word", t), rows = [];
+    if (r && r.guesses) {
+      const { answer } = Mint.wordPuzzle(t);
+      for (const g of r.guesses) rows.push([...g].map((c, i) => c === answer[i] ? "#1f8a8a" : answer.includes(c) ? "#e9773a" : "#7c7f84"));
+    } else rows.push(["#7c7f84", "#e9773a", "#7c7f84", "#1f8a8a", "#7c7f84"]);
+    let out = "";
+    for (let y = 0; y < 6; y++) for (let x = 0; x < 5; x++) {
+      const f = rows[y] ? rows[y][x] : W;
+      out += `<rect x="${38 + x * 30}" y="${12 + y * 33}" width="26" height="29" rx="2" fill="${f}" stroke="${rows[y] ? f : INK}" stroke-width="2"/>`;
+    }
+    return `<svg class="prev" viewBox="0 0 220 220" aria-hidden="true">${out}</svg>`;
+  }
+  function hiveArt() {
+    const p = Mint.hivePuzzle(t), R = 30, D = 56;
+    const shape = [...Array(6).keys()].map((i) => `${(R * Math.cos((Math.PI / 3) * i)).toFixed(1)},${(R * Math.sin((Math.PI / 3) * i)).toFixed(1)}`).join(" ");
+    const cell = (c, x, y, mid) => `<g transform="translate(${(110 + x).toFixed(1)},${(110 + y).toFixed(1)})"><polygon points="${shape}" fill="${mid ? INK : W}" stroke="${INK}" stroke-width="2.5"/><text y="8" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="800" font-size="22" fill="${mid ? W : INK}">${c.toUpperCase()}</text></g>`;
+    return `<svg class="prev" viewBox="0 0 220 220" aria-hidden="true">${cell(p.center, 0, 0, true)}${p.outer.map((c, i) => {
+      const a = Math.PI / 6 + (Math.PI / 3) * i;
+      return cell(c, D * Math.cos(a), D * Math.sin(a), false);
+    }).join("")}</svg>`;
+  }
+  function boxArt() {
+    const p = Mint.boxPuzzle(t), A = 50, B = 170;
+    let out = `<rect x="${A}" y="${A}" width="${B - A}" height="${B - A}" rx="3" fill="${W}" stroke="${INK}" stroke-width="3"/>`;
+    p.sides.forEach((side, i) => side.forEach((c, k) => {
+      const m = A + ((k + 1) * (B - A)) / 4;
+      const [x, y] = [[m, A], [B, m], [m, B], [A, m]][i];
+      const [dx, dy] = [[0, -18], [20, 0], [0, 26], [-20, 0]][i];
+      out += `<circle cx="${x}" cy="${y}" r="6.5" fill="${W}" stroke="${INK}" stroke-width="2.5"/><text x="${x + dx}" y="${y + dy + 6}" text-anchor="middle" font-family="Libre Franklin,Arial,sans-serif" font-weight="800" font-size="17" fill="${INK}">${c.toUpperCase()}</text>`;
+    }));
+    return `<svg class="prev" viewBox="0 0 220 220" aria-hidden="true">${out}</svg>`;
+  }
+  const ART = { word: wordArt, hive: hiveArt, box: boxArt, sum: sumArt, sudoku: sudokuArt, nonogram: nonoArt };
+
+  // ---- Today's games -----------------------------------------------------
+  // The lead rotates through all six; the next two sit beside it, the rest below.
+  const order = GAMES.map((_, k) => GAMES[(no - 1 + k) % GAMES.length]);
+  const lead = order[0];
+  let solvedCount = 0;
+  const card = (g) => {
+    const r = Mint.result(g, t), solved = !!(r && r.solved);
+    if (r) solvedCount++;
+    const badge = solved ? `<span class="badge">Solved ✓</span>` : r ? `<span class="badge">Played</span>` : g === lead ? `<span class="badge new">Today’s lead</span>` : "";
+    const cta = r ? `<span class="btn o">See results</span>` : `<span class="btn p">Play</span>`;
+    const s = Mint.streak(g);
+    return `<a class="gcard${g === lead ? " lead" : ""}" href="/${g}/" style="--c:${COLOR[g]}">
+      <div class="art">${badge}${ART[g](solved)}</div>
+      <div class="body"><div class="title">${Mint.icon(g)}<h3>${Mint.NAMES[g]}</h3></div>
+        <p>${BLURB[g]}</p>
+        <div class="meta">${META[g]}</div>
+        <div class="foot">${cta}<span class="meta">${s ? `${s}-day streak` : `No. ${no}`}</span></div></div>
+    </a>`;
+  };
+  $("games").innerHTML = order.slice(0, 3).map(card).join("");
+  $("games2").innerHTML = order.slice(3).map(card).join("");
+  $("done-count").textContent = solvedCount === GAMES.length ? "All six done. See you tomorrow." : `${solvedCount} of ${GAMES.length} played`;
+  // Hero: one button to the first game not yet played today (archive once all six are done).
+  const next = order.find((g) => !Mint.result(g, t)), cta = $("hero-cta");
+  if (next) { cta.href = `/${next}/`; cta.textContent = `Play ${Mint.NAMES[next]}`; }
+  else { cta.href = "/archive"; cta.textContent = "Play a past puzzle"; }
+
+  // ---- Your week (Monday to Sunday) -------------------------------------
+  const dow = (new Date(Date.UTC(y, m - 1, d)).getUTCDay() + 6) % 7;
+  const monday = Mint.addDays(t, -dow);
+  const days = [...Array(7).keys()].map((k) => Mint.addDays(monday, k));
+  const head = `<div class="wrow head"><span></span>${["M", "T", "W", "T", "F", "S", "S"].map((x) => `<span>${x}</span>`).join("")}<span style="text-align:right">Streak</span></div>`;
+  $("week").innerHTML = head + GAMES.map((g) => {
+    const sq = days.map((day) => {
+      const cls = ["sq"];
+      if (day > t || day < Mint.LAUNCH) cls.push("future");
+      else { const r = Mint.result(g, day); if (r) cls.push(r.solved ? "solved" : "played"); }
+      if (day === t) cls.push("today");
+      const label = `${Mint.NAMES[g]}, ${Mint.prettyDate(day)}`;
+      return day <= t && day >= Mint.LAUNCH
+        ? `<a class="${cls.join(" ")}" href="/${g}/${day === t ? "" : day}" title="${label}" aria-label="${label}"></a>`
+        : `<span class="${cls.join(" ")}"></span>`;
+    }).join("");
+    return `<div class="wrow" style="--c:${COLOR[g]}"><a class="g" href="/${g}/">${Mint.icon(g)}<span>${Mint.NAMES[g]}</span></a>${sq}<div class="stk">${Mint.streak(g)}<small>days</small></div></div>`;
+  }).join("");
+
+  // ---- Archive -----------------------------------------------------------
+  $("arch").innerHTML = GAMES.map((g) => {
+    const items = [];
+    for (let day = t, k = 0; day >= Mint.LAUNCH && k < 5; day = Mint.addDays(day, -1), k++) {
+      const r = Mint.result(g, day);
+      const mark = r ? (r.solved ? " ✓" : " ·") : "";
+      items.push(`<li><a href="/${g}/${day === t ? "" : day}"><b>No. ${Mint.puzzleNumber(day)}${day === t ? " · Today" : ""}</b><span>${Mint.prettyDate(day).replace(/, \d{4}$/, "")}${mark}</span></a></li>`);
+    }
+    return `<div><h3>${Mint.icon(g)}${Mint.NAMES[g]}</h3><ul>${items.join("")}</ul><a class="all" href="/${g}/#more">Full archive →</a></div>`;
+  }).join("");
+})();
+</script>
+</body>
+</html>
