@@ -80,7 +80,7 @@
       let i = 0;
       body += `<p class="stem">${esc(q.q).replace(/(\((?:i|ii|iii)\) )?___/g, () => `<span class="blank" data-b="${i}">${q.blanks.length > 1 ? `(${ROMAN[i++]})` : (i++, "&nbsp;")}</span>`)}</p>`;
     } else {
-      body += `<p class="stem">${q.q}</p>`;
+      body += `<div class="stem">${q.q}</div>`;
     }
 
     if (q.t === "tc") {

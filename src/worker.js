@@ -27,7 +27,7 @@ const GAMES = {
   nonogram: "Mint Nonogram",
 };
 const SITE_PAGES = ["/", "/archive", "/how-to", "/embed", "/about", "/privacy", "/puzzles/"];
-const GRE_PAGES = ["/gre/practice/", "/gre/mock/", "/gre/vocab/", "/gre/format", "/gre/scoring", "/gre/study-plan", "/gre/math-formulas"];
+const GRE_PAGES = ["/gre/practice/", "/gre/mock/", "/gre/vocab/", "/gre/format", "/gre/scoring", "/gre/study-plan", "/gre/official-practice", "/gre/math-formulas"];
 const HOW_TO = ["word", "hive", "box", "sum", "sudoku", "nonogram"];
 // Mint Puzzles on the App Store (ASC app 6826092706). The banner tag goes out only once
 // the iTunes lookup API returns it, i.e. after Apple approves and releases the app.

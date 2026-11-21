@@ -25,6 +25,24 @@
         hard: ["q8", "q37", "q42", "q18", "q20", "q21", "q24", "q38", "q41", "q29", "q30", "q31", "q40", "q36", "q39"],
       },
     },
+    {
+      id: "m2",
+      title: "Mock Test 2",
+      essay: {
+        claim: "Cities should make public transportation free for all residents.",
+        task: "Write a response in which you discuss how far you agree or disagree with the claim. Explain your reasoning, and consider ways in which the claim might or might not hold true.",
+      },
+      verbal: {
+        s1: ["v43", "v44", "v45", "v46", "v47", "v48", "v49", "v50", "v51", "v52", "v53", "v54"],
+        easy: ["v55", "v56", "v57", "v58", "v59", "v60", "v61", "v62", "v63", "v64", "v65", "v66", "v67", "v68", "v69"],
+        hard: ["v70", "v71", "v72", "v73", "v74", "v75", "v76", "v77", "v78", "v79", "v80", "v81", "v82", "v83", "v84"],
+      },
+      quant: {
+        s1: ["q43", "q44", "q45", "q46", "q47", "q48", "q49", "q50", "q51", "q52", "q53", "q54"],
+        easy: ["q55", "q56", "q57", "q58", "q59", "q60", "q61", "q62", "q63", "q64", "q65", "q66", "q67", "q68", "q69"],
+        hard: ["q70", "q71", "q72", "q73", "q74", "q75", "q76", "q77", "q78", "q79", "q80", "q81", "q82", "q83", "q84"],
+      },
+    },
   ];
   const STAGES = [
     { key: "aw", name: "Analytical Writing", min: 30 },

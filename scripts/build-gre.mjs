@@ -51,7 +51,7 @@ ${extraHead}${jsonld ? `<script type="application/ld+json">${JSON.stringify(json
 ${body}
 <footer><div class="wrap">
   <div class="fbrand"><a class="logo gre" href="/"><i></i>Mint GRE</a><p>Free GRE prep: original practice questions with full explanations, a daily question, vocab flashcards and study guides.</p><p class="disclaim">GRE® is a registered trademark of ETS. Mint GRE is not affiliated with or endorsed by ETS.</p></div>
-  <div class="fcol"><b>GRE prep</b><a href="/gre/practice/">Practice questions</a><a href="/gre/mock/">Full mock test</a><a href="/gre/practice/?s=quant">Quant practice</a><a href="/gre/practice/?s=verbal">Verbal practice</a><a href="/gre/vocab/">Vocabulary</a><a href="/gre/format">Test format</a><a href="/gre/scoring">Scoring</a><a href="/gre/study-plan">Study plan</a><a href="/gre/math-formulas">Math formulas</a></div>
+  <div class="fcol"><b>GRE prep</b><a href="/gre/practice/">Practice questions</a><a href="/gre/mock/">Full mock test</a><a href="/gre/practice/?s=quant">Quant practice</a><a href="/gre/practice/?s=verbal">Verbal practice</a><a href="/gre/vocab/">Vocabulary</a><a href="/gre/format">Test format</a><a href="/gre/scoring">Scoring</a><a href="/gre/study-plan">Study plan</a><a href="/gre/official-practice">Official ETS practice</a><a href="/gre/math-formulas">Math formulas</a></div>
   <div class="fcol"><b>More</b><a href="/puzzles/">Mint Puzzles</a><a href="/about">About</a><a href="/privacy">Privacy</a><span>© Mint Site Studio</span></div>
 </div></footer>
 ${scripts}</body>
@@ -92,8 +92,8 @@ P({
     <a class="tile" href="/gre/vocab/"><b>GRE vocabulary</b><span>120 high-frequency words with short definitions and example sentences. Flip through them as flashcards.</span><em>120 words</em></a>
   </section>
 
-  <div class="gsec"><h2>Full-length mock test</h2><span>1 hr 58 min, timed like test day</span></div>
-  <section class="tiles"><a class="tile" href="/gre/mock/" style="grid-column:1/-1"><b>GRE Mock Test 1</b><span>An Issue essay plus two Verbal and two Quant sections on the real clock. Your second section of each measure adapts to how the first went, then every question is reviewed with its explanation and you get an estimated 130–170 score.</span><em>Start the mock test</em></a></section>
+  <div class="gsec"><h2>Full-length mock tests</h2><span>1 hr 58 min, timed like test day</span></div>
+  <section class="tiles"><a class="tile" href="/gre/mock/" style="grid-column:1/-1"><b>2 full GRE mock tests</b><span>Each one is an Issue essay plus two Verbal and two Quant sections on the real clock. Your second section of each measure adapts to how the first went, then every question is reviewed with its explanation and you get an estimated 130–170 score.</span><em>Start the mock test</em></a></section>
 
   <div class="gsec"><h2>The GRE at a glance</h2><span>Current shorter test, since September 2023</span></div>
   <section class="facts">
@@ -108,6 +108,7 @@ P({
     <a class="tile" href="/gre/format"><b>GRE test format</b><span>Every section, how many questions, how much time, and how the adaptive second section works.</span><em>Read the guide</em></a>
     <a class="tile" href="/gre/scoring"><b>How GRE scoring works</b><span>The 130–170 scale, why you should never leave a question blank, and when scores arrive.</span><em>Read the guide</em></a>
     <a class="tile" href="/gre/study-plan"><b>8-week study plan</b><span>A week-by-week plan with a 4-week fast track, built around practice and review.</span><em>Read the guide</em></a>
+    <a class="tile" href="/gre/official-practice"><b>Official ETS practice</b><span>When to use the free POWERPREP tests and the Official Guide, and what each costs.</span><em>Read the guide</em></a>
     <a class="tile" href="/gre/math-formulas"><b>GRE math formulas</b><span>The formulas and rules Quant actually tests, on one page.</span><em>Read the guide</em></a>
   </section>
 
@@ -207,12 +208,12 @@ P({
 // ---------------------------------------------------------------- mock test
 P({
   file: "gre/mock/index.html", url: "/gre/mock/",
-  title: "Free Full-Length GRE Mock Test (Timed, Adaptive) | Mint GRE",
-  desc: "Take a free full-length GRE mock test: Issue essay, two Verbal and two Quant sections on the real 1 hr 58 min clock, an adaptive second section, an estimated 130–170 score and explanations for every question.",
+  title: "Free Full-Length GRE Mock Tests (Timed, Adaptive) | Mint GRE",
+  desc: "Take free full-length GRE mock tests: Issue essay, two Verbal and two Quant sections on the real 1 hr 58 min clock, an adaptive second section, an estimated 130–170 score and explanations for every question.",
   body: `<main class="wrap prose">
   <div class="mock-intro">
   <p class="kick"><a href="/">Mint GRE</a> · Mock test</p>
-  <h1>Free full-length GRE mock test</h1>
+  <h1>Free full-length GRE mock tests</h1>
   <p class="lede">Timed and structured like the current GRE: one Issue essay, then two Verbal and two Quant sections. Inside a section you can skip, mark and come back to questions; once you end a section, it’s closed.</p>
   <div class="tablewrap"><table class="t">
     <tr><th>Section</th><th>Questions</th><th>Time</th></tr>
@@ -380,7 +381,7 @@ guide("gre/study-plan.html", "/gre/study-plan", "GRE Study Plan: 8 Weeks (with a
   <p class="lede">About 8–10 hours a week for 8 weeks is enough for most people to improve meaningfully. If you only have a month, use the 4-week version below.</p>
   <h2>Before you start</h2>
   <ul>
-    <li><b>Take a timed diagnostic.</b> ETS offers free official practice tests (POWERPREP). Your starting scores tell you where the hours should go.</li>
+    <li><b>Take a timed diagnostic.</b> ETS offers two free official practice tests (POWERPREP). Our <a href="/gre/official-practice">official practice guide</a> shows when to use each one and the Official Guide books.</li>
     <li><b>Set a target.</b> Look up typical scores for the programs you want and write down your Verbal and Quant goals.</li>
     <li><b>Book the test.</b> A date on the calendar keeps the plan real. You can retake after 21 days if you need to.</li>
   </ul>
@@ -409,6 +410,42 @@ guide("gre/study-plan.html", "/gre/study-plan", "GRE Study Plan: 8 Weeks (with a
     <li><b>Review right answers too.</b> If you got it right slowly, the explanation probably shows a faster route.</li>
     <li><b>Practice a little every day.</b> The <a href="/#daily">daily question</a> on our homepage takes two minutes.</li>
   </ul>`);
+
+guide("gre/official-practice.html", "/gre/official-practice", "How to Use Official GRE Practice: POWERPREP and the Official Guide",
+  "A study plan built around ETS's official GRE practice: when to take the free POWERPREP tests, which Official Guide books to buy, the free Math Review and Issue topic pool, and how to pair them with free original practice.",
+  "How to use official GRE practice", `
+  <p class="lede">Only ETS, the maker of the GRE, publishes real GRE questions. They’re the best measure of where you stand, and there are only a few of them, so don’t waste them on day one. Here is what exists and when to use each piece.</p>
+  <h2>What ETS offers</h2>
+  <div class="tablewrap"><table class="t">
+    <tr><th>Material</th><th>What you get</th><th>Cost</th></tr>
+    <tr><td><a href="https://www.ets.org/gre/test-takers/general-test/prepare/powerprep.html" rel="nofollow">POWERPREP Online tests 1 and 2</a></td><td>Two full-length practice tests in the real test software. Test 1 is untimed and shows correct answers but no Verbal or Quant scores; test 2 is timed.</td><td>Free with an ETS account</td></tr>
+    <tr><td><a href="https://www.ets.org/gre/test-takers/general-test/prepare/powerprep.html" rel="nofollow">POWERPREP PLUS Online</a></td><td>Additional full-length tests with instant scores, answer explanations, difficulty levels and scored sample essays.</td><td>$44.95 per test</td></tr>
+    <tr><td><a href="https://www.ets.org/gre/test-takers/general-test/prepare/prep-books-services.html" rel="nofollow">The Official Guide to the GRE General Test</a></td><td>Hundreds of real questions with explanations. ETS lists access to four practice tests: two in the book and two POWERPREP Online tests.</td><td>$45</td></tr>
+    <tr><td><a href="https://www.ets.org/gre/test-takers/general-test/prepare/prep-books-services.html" rel="nofollow">Official Verbal and Quantitative Practice Questions</a></td><td>Two books, 150 real questions each, with explanations.</td><td>$25 each</td></tr>
+    <tr><td><a href="https://globalhighered.ets.org/gre-math-review" rel="nofollow">Math Review</a></td><td>A roughly 100-page review of every math topic Quant can test.</td><td>Free PDF</td></tr>
+    <tr><td><a href="https://globalhighered.ets.org/gre-issue-topic-tool" rel="nofollow">Issue topic pool</a></td><td>The full published pool your essay topic is drawn from.</td><td>Free</td></tr>
+  </table></div>
+  <p class="disclaim">From ETS’s POWERPREP and Books &amp; Services pages, checked November 2026. Prices and editions change; confirm on ets.org before you buy.</p>
+
+  <h2>The plan: save the official tests for checkpoints</h2>
+  <p>Use original practice to learn and drill, and spend official material where accuracy matters most: measuring your level. This fits our <a href="/gre/study-plan">8-week study plan</a>.</p>
+  <div class="tablewrap"><table class="t">
+    <tr><th>When</th><th>Official material</th><th>Mint GRE</th></tr>
+    <tr><td>Week 1</td><td>POWERPREP test 1, untimed, to learn the software and see every question type.</td><td>Read the <a href="/gre/format">format guide</a>; start <a href="/gre/vocab/">vocab</a>.</td></tr>
+    <tr><td>Weeks 2–5</td><td>About 10 Official Guide questions a day in the area you’re studying. Skim the Math Review chapter for each Quant topic.</td><td><a href="/gre/practice/">Practice questions</a> by topic, then <b>Missed only</b> a few days later.</td></tr>
+    <tr><td>Week 4</td><td>POWERPREP test 2, timed: your first real score checkpoint.</td><td>Compare with your <a href="/gre/mock/">mock test</a> result.</td></tr>
+    <tr><td>Weeks 5–7</td><td>The Verbal and Quant practice books for your weaker measure. Write essays on topics from the Issue pool.</td><td>Timed <a href="/gre/mock/">mock tests</a> to build stamina.</td></tr>
+    <tr><td>Week 7–8</td><td>The two Official Guide paper tests, or a POWERPREP PLUS test, about a week before test day.</td><td>Redo every missed question.</td></tr>
+  </table></div>
+
+  <h2>Getting the most from real questions</h2>
+  <ul>
+    <li><b>Never retake an official test soon after.</b> You’ll remember answers and the score will lie to you.</li>
+    <li><b>Review every miss the same day.</b> Write down why you missed it: careless, didn’t know it, or fell for a trap.</li>
+    <li><b>Time yourself.</b> About 1.5 minutes per Verbal question and 1.75 per Quant question.</li>
+    <li><b>Be wary of “real questions” elsewhere.</b> Sites claiming to host leaked or recalled live-test questions aren’t official, and ETS doesn’t publish its live questions.</li>
+  </ul>
+  <p class="disclaim">GRE®, POWERPREP® and POWERPREP PLUS® are registered trademarks of ETS. Mint GRE is not affiliated with or endorsed by ETS, and our questions are original practice, not real test questions.</p>`);
 
 guide("gre/math-formulas.html", "/gre/math-formulas", "GRE Math Formulas: The Quant Cheat Sheet",
   "The formulas and rules GRE Quant tests most: percents, ratios, exponents, algebra, triangles, circles, coordinate geometry, statistics, probability and counting, on one page.",
